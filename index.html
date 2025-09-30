@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desktop OS Interface v6 - Final</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --icon-size: 60px;
+            --border-radius-large: 12px;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --backdrop-blur: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: url('https://res.cloudinary.com/dzmyybvbu/image/upload/v1741207281/naw6jwove44lhvicmjfs.jpg') center/cover no-repeat;
+            color: #f0f0f0; margin: 0; height: 100vh; width: 100vw; overflow: hidden;
+        }
+
+        .desktop { position: relative; width: 100%; height: 100%; }
+
+        .desktop-icon {
+            position: absolute; width: 90px; display: flex; flex-direction: column; align-items: center;
+            text-align: center; cursor: grab; user-select: none;
+            transition: top 0.2s ease-out, left 0.2s ease-out;
+        }
+        .desktop-icon:active { cursor: grabbing; }
+        .desktop-icon .icon-image { width: var(--icon-size); object-fit: contain; filter: drop-shadow(0px 4px 6px var(--shadow-color)); }
+        .icon-label { padding: 2px 0; font-size: 13px; margin-top: 8px; color: white; font-weight: 500; text-shadow: 0 1px 3px var(--shadow-color); }
+
+        .taskbar-container {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 80px; display: flex;
+            justify-content: space-between; align-items: center; padding: 0 20px;
+            box-sizing: border-box; z-index: 5000; pointer-events: none;
+        }
+        .taskbar-left, .taskbar-center, .taskbar-right { pointer-events: auto; }
+
+        #start-button {
+            width: 45px; height: 45px; background: rgba(40, 40, 40, 0.5); backdrop-filter: blur(var(--backdrop-blur));
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; transition: background-color 0.2s ease;
+        }
+        #start-button:hover { background: rgba(255,255,255,0.2); }
+        
+        .taskbar-center {
+            display: flex; align-items: center; padding: 8px; background: rgba(40, 40, 40, 0.5);
+            backdrop-filter: blur(var(--backdrop-blur)); border-radius: var(--border-radius-large);
+            border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 20px var(--shadow-color);
+        }
+        .taskbar-list { display: flex; list-style: none; margin: 0; padding: 0; }
+        .taskbar-item { width: 45px; height: 45px; margin: 0 4px; }
+        .taskbar-item__link { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; transition: transform 0.2s cubic-bezier(.16, 1, .3, 1); }
+        .taskbar-item .image { width: 85%; object-fit: contain; }
+        .taskbar-item.hover .taskbar-item__link { transform: scale(1.5) translateY(-8px); }
+        .taskbar-item.sibling-close .taskbar-item__link { transform: scale(1.2) translateY(-4px); }
+        .taskbar-item.sibling-far .taskbar-item__link { transform: scale(1.1); }
+        
+        .system-tray { 
+            color: #f0f0f0; font-size: 14px; user-select: none; text-align: right; padding: 8px 12px;
+            background: rgba(40, 40, 40, 0.5); backdrop-filter: blur(var(--backdrop-blur));
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px;
+        }
+
+        #start-menu {
+            position: fixed; bottom: 90px; left: 20px; width: 300px; height: 400px;
+            background: rgba(30,30,30,0.6); backdrop-filter: blur(15px); border-radius: var(--border-radius-large);
+            border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 5px 25px var(--shadow-color);
+            z-index: 4999; display: flex; flex-direction: column; opacity: 0; visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease; transform: translateY(10px);
+        }
+        #start-menu.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+        .start-menu-header { padding: 15px; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .start-menu-list { flex-grow: 1; list-style: none; margin: 0; padding: 10px; overflow-y: auto; }
+        .start-menu-item { display: flex; align-items: center; padding: 10px; border-radius: 8px; cursor: pointer; }
+        .start-menu-item:hover { background-color: rgba(255,255,255,0.1); }
+        .start-menu-item img { width: 32px; height: 32px; margin-right: 15px; }
+
+        .window {
+            position: fixed; background-color: rgba(30, 30, 30, 0.6); backdrop-filter: blur(var(--backdrop-blur));
+            border-radius: var(--border-radius-large); box-shadow: 0 10px 30px var(--shadow-color);
+            display: flex; flex-direction: column; border: 1px solid rgba(255, 255, 255, 0.15);
+            resize: both; overflow: hidden; min-width: 500px; min-height: 400px;
+        }
+        .window-header { display: flex; align-items: center; padding: 0 12px; height: 36px; background-color: rgba(0, 0, 0, 0.2); cursor: grab; flex-shrink: 0; }
+        .window-header:active { cursor: grabbing; }
+        .window-controls { display: flex; gap: 8px; }
+        .window-control { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; }
+        .close { background: #ff5f56; }
+        .window-title { flex-grow: 1; text-align: center; font-size: 14px; user-select: none; }
+        .window-content { padding: 0; flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; }
+        .window-content iframe { width: 100%; height: 100%; border: none; }
+        
+        .file-explorer-header { display: flex; align-items: center; padding: 8px; background-color: rgba(0,0,0,0.1); flex-shrink: 0; }
+        .back-button { cursor: pointer; font-size: 16px; padding: 5px 10px; border-radius: 6px; }
+        .back-button:hover { background-color: rgba(255,255,255,0.1); }
+        .breadcrumbs { margin-left: 10px; font-size: 14px; color: #ccc; }
+        .breadcrumb-item { cursor: pointer; color: #fff; }
+        .breadcrumb-item:hover { text-decoration: underline; }
+        
+        .file-explorer-content { flex-grow: 1; padding: 20px; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 20px; overflow-y: auto; }
+        .fs-item { display: flex; flex-direction: column; align-items: center; width: 110px; text-align: center; cursor: pointer; }
+        .fs-item-icon-container { width: 60px; height: 60px; display:flex; align-items:center; justify-content:center; margin-bottom: 8px; }
+        .fs-item-icon-container i { font-size: 52px; color: #a7c7e7; }
+        .fs-item-icon-container img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+        .fs-item span { font-size: 13px; word-break: break-word; }
+
+        .context-menu {
+            position: fixed; z-index: 10000; width: 220px; background: rgba(50, 50, 50, 0.7);
+            backdrop-filter: blur(15px); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); display: none;
+        }
+        .context-menu-item { padding: 10px 15px; font-size: 14px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; }
+        .context-menu-item:hover { background-color: rgba(255,255,255,0.1); }
+        .context-menu-item i { margin-right: 10px; width: 16px; text-align: center; }
+    </style>
+</head>
+<body>
+    <main class="desktop"></main>
+    <div id="start-menu"><div class="start-menu-header">Menu Démarrer</div><ul class="start-menu-list"></ul></div>
+    <div class="taskbar-container">
+        <div class="taskbar-left"><div id="start-button"><i class="fab fa-windows"></i></div></div>
+        <div class="taskbar-center"><nav class="taskbar-nav"><ul class="taskbar-list"></ul></nav></div>
+        <div class="taskbar-right"><div class="system-tray"><div id="tray-clock"></div><div id="tray-date" style="opacity: 0.7;"></div></div></div>
+    </div>
+    <div id="desktop-context-menu" class="context-menu">
+        <div class="context-menu-item" id="open-app"><i class="fas fa-folder-open"></i>Ouvrir</div>
+        <div class="context-menu-item" id="pin-to-taskbar"><i class="fas fa-thumbtack"></i>Épingler au Centre</div>
+    </div>
+    <div id="fs-context-menu" class="context-menu">
+        <div class="context-menu-item" id="fs-new-subject"><i class="fas fa-book-medical"></i>Nouvelle Matière</div>
+        <div class="context-menu-item" id="fs-new-chapter"><i class="fas fa-plus-circle"></i>Nouveau Chapitre</div>
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const GRID_SIZE = 120;
+        let activeIcon = null;
+        let highestZ = 2000;
+        let currentAppContext = { window: null, folderId: null };
+
+        const desktop = document.querySelector('.desktop');
+        const startMenuList = document.querySelector('.start-menu-list');
+
+        let fileSystem = {
+    // Le dossier racine qui contient toutes les matières
+    'root': { 
+        id: 'root', 
+        name: 'Mes Cours', 
+        type: 'root', 
+        parent: null, 
+        children: [
+            'subj1', 'subj2', 'subj3', 'subj4', 'subj5', 'subj6', 'subj7', 'subj8', 'subj9'
+        ] 
+    },
+
+    // --- Matières ---
+
+    'subj1': { 
+        id: 'subj1', 
+        name: 'SC.PHYS.& PHYS.APPLI [LA CROIX C.]', 
+        type: 'subject', 
+        parent: 'root', 
+        children: [
+            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
+            // pour ajouter d'autres chapitres dans n'importe quelle matière.
+            { 
+                id: 'math-chap1', 
+                name: 'Chapitre 1: Les Dérivées', 
+                type: 'chapter', 
+                // Lien de l'image pour l'icône NotebookLM
+                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
+                // Lien cible de l'icône NotebookLM
+                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
+                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
+                cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' 
+            }
+        ]  // Vous pouvez ajouter vos chapitres ici
+    },
+    'subj2': { 
+        id: 'subj2', 
+        name: 'PHYSIQUE-CHIMIE [FAU G.]', 
+        type: 'subject', 
+        parent: 'root', 
+        children: [
+            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
+            // pour ajouter d'autres chapitres dans n'importe quelle matière.
+            { 
+                id: 'math-chap1', 
+                name: 'Chapitre 1: Les Dérivées', 
+                type: 'chapter', 
+                // Lien de l'image pour l'icône NotebookLM
+                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
+                // Lien cible de l'icône NotebookLM
+                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
+                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
+                cour_targetUrl: 'https://drive.google.com/drive/folders/1ppvyAy1mkO68M7w7ppIatoY4un-nYRzz?usp=drive_link' 
+            }
+        ]  
+    },
+    'subj3': { 
+        id: 'subj3', 
+        name: 'MATHEMATIQUES [HERVIEUX D.]', 
+        type: 'subject', 
+        parent: 'root', 
+        children: [
+            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
+            // pour ajouter d'autres chapitres dans n'importe quelle matière.
+            { 
+                id: 'math-chap1', 
+                name: 'Chapitre 1: Les Dérivées', 
+                type: 'chapter', 
+                // Lien de l'image pour l'icône NotebookLM
+                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
+                // Lien cible de l'icône NotebookLM
+                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
+                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
+                cour_targetUrl: 'https://drive.google.com/drive/folders/1Tk9_VKPKtqDGxXHAd1u37I8jGrBz9tQD?usp=drive_link' 
+            }
+        ] 
+    },
+    'subj4': { 
+        id: 'subj4', 
+        name: 'PHYSIQUE-CHIMIE [LEMONNIER J.]', 
+        type: 'subject', 
+        parent: 'root', 
+        children: [
+            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
+            // pour ajouter d'autres chapitres dans n'importe quelle matière.
+            { 
+                id: 'math-chap1', 
+                name: 'Chapitre 1: Les Dérivées', 
+                type: 'chapter', 
+                // Lien de l'image pour l'icône NotebookLM
+                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
+                // Lien cible de l'icône NotebookLM
+                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
+                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
+                cour_targetUrl: 'https://drive.google.com/drive/folders/1ppvyAy1mkO68M7w7ppIatoY4un-nYRzz?usp=sharing' 
+            }
+        ]  
+    },
+    'subj5': { 
+        id: 'subj5', 
+        name: 'CULTURE GENE.ET EXPR [LE BRUN A.]', 
+        type: 'subject', 
+        parent: 'root', 
+        children: [
+            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
+            // pour ajouter d'autres chapitres dans n'importe quelle matière.
+            { 
+                id: 'math-chap1', 
+                name: 'Chapitre 1: Les Dérivées', 
+                type: 'chapter', 
+                // Lien de l'image pour l'icône NotebookLM
+                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
+                // Lien cible de l'icône NotebookLM
+                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
+                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
+                cour_targetUrl: 'https://drive.google.com/drive/folders/1_C2wmVkgZtEtZ6pTbsyhNJbNindjChKJ?usp=drive_link' 
+            }
+        ] 
+    },
+    'subj6': { 
+        id: 'subj6', 
+        name: 'SC. TECHNIQUES IND. [LE BRIS P.]', 
+        type: 'subject', 
+        parent: 'root', 
+        children: [
+            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
+            // pour ajouter d'autres chapitres dans n'importe quelle matière.
+            { 
+                id: 'math-chap1', 
+                name: 'Chapitre 1: Les Dérivées', 
+                type: 'chapter', 
+                // Lien de l'image pour l'icône NotebookLM
+                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
+                // Lien cible de l'icône NotebookLM
+                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
+                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
+                cour_targetUrl: 'https://drive.google.com/file/mon-cours-sur-les-derivees' 
+            }
+        ] 
+    },
+    'subj7': { 
+        id: 'subj7', 
+        name: 'SC. TECHNIQUES IND. [VENNEGUES E.]', 
+        type: 'subject', 
+        parent: 'root', 
+        children: [
+            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
+            // pour ajouter d'autres chapitres dans n'importe quelle matière.
+            { 
+                id: 'math-chap1', 
+                name: 'Chapitre 1: Les Dérivées', 
+                type: 'chapter', 
+                // Lien de l'image pour l'icône NotebookLM
+                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
+                // Lien cible de l'icône NotebookLM
+                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
+                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
+                cour_targetUrl: 'https://drive.google.com/drive/folders/1ZlqfdZaGCqnseefRmZP8fRecfwXMWOjt?usp=drive_link' 
+            }
+        ] 
+    },
+    'subj8': { 
+        id: 'subj8', 
+        name: 'ANGLAIS LV1 [ESCOLA N.]', 
+        type: 'subject', 
+        parent: 'root', 
+        children: [
+            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
+            // pour ajouter d'autres chapitres dans n'importe quelle matière.
+            { 
+                id: 'math-chap1', 
+                name: 'Chapitre 1: Les Dérivées', 
+                type: 'chapter', 
+                // Lien de l'image pour l'icône NotebookLM
+                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
+                // Lien cible de l'icône NotebookLM
+                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
+                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
+                cour_targetUrl: 'https://drive.google.com/drive/folders/1BXzVTQXB0ggaxDAt4KE7gCf-fQhfJddk?usp=drive_link' 
+            }
+        ] 
+    },
+    'subj9': { 
+        id: 'subj9', 
+        name: 'ANGLAIS LV1 PRO [ESCOLA N., LE BRIS P.]', 
+        type: 'subject', 
+        parent: 'root', 
+        children: [
+            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
+            // pour ajouter d'autres chapitres dans n'importe quelle matière.
+            { 
+                id: 'math-chap1', 
+                name: 'Chapitre 1: Les Dérivées', 
+                type: 'chapter', 
+                // Lien de l'image pour l'icône NotebookLM
+                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
+                // Lien cible de l'icône NotebookLM
+                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
+                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
+                cour_targetUrl: 'https://drive.google.com/file/mon-cours-sur-les-derivees' 
+            }
+        ] 
+    },
+};
+
+        const APPS = [
+            { id: 'cours', name: 'Mes Cours', icon: 'https://res.cloudinary.com/dzmyybvbu/image/upload/v1759262950/Webinar-Icons-04_rswot9.png', type: 'filesystem' },
+            { id: 'browser', name: 'Navigateur Web', icon: 'https://cdn.prod.website-files.com/6728a3e6f4f4161c235bc519/6728a6bea73fcc6ee568f6f0_webflow.png', type: 'iframe', iframeSrc: 'https://www.wikipedia.org/' },
+            { id: 'notion', name: 'Notion', icon: 'https://cdn.prod.website-files.com/6728a3e6f4f4161c235bc519/6728a6be92ee5ddf0080fb90_notion.png', type: 'link', href: 'https://notion.so' },
+            { id: 'figma', name: 'Figma', icon: 'https://cdn.prod.website-files.com/6728a3e6f4f4161c235bc519/6728a6be1de916069b5e1aaa_figma.png', type: 'link', href: 'https://figma.com' },
+            { id: 'slack', name: 'Slack', icon: 'https://cdn.prod.website-files.com/6728a3e6f4f4161c235bc519/6728a6be8c099d4e1ed55770_slack.png', type: 'link', href: 'https://slack.com' },
+            { id: 'spotify', name: 'Spotify', icon: 'https://cdn.prod.website-files.com/6728a3e6f4f4161c235bc519/6728a6bea97e140677496dae_spotify.png', type: 'link', href: 'https://spotify.com' }
+        ];
+
+        function renderDesktop() {
+            desktop.innerHTML = ''; startMenuList.innerHTML = '';
+            APPS.forEach((app, index) => {
+                const icon = document.createElement('div'); icon.className = 'desktop-icon'; icon.dataset.appId = app.id;
+                icon.style.left = `${40 + (index % 4) * GRID_SIZE}px`; icon.style.top = `${40 + Math.floor(index / 4) * GRID_SIZE}px`;
+                icon.innerHTML = `<img src="${app.icon}" alt="${app.name}" class="icon-image"><span class="icon-label">${app.name}</span>`;
+                desktop.appendChild(icon); makeDraggable(icon, icon);
+                const startItem = document.createElement('li'); startItem.className = 'start-menu-item'; startItem.dataset.appId = app.id;
+                startItem.innerHTML = `<img src="${app.icon}" alt="${app.name}"><span>${app.name}</span>`;
+                startMenuList.appendChild(startItem);
+            });
+            attachIconListeners();
+        }
+
+        function createWindow(app, options = {}) {
+            highestZ++; const windowEl = document.createElement('div'); windowEl.className = 'window'; windowEl.id = `window-${options.id || app.id}`;
+            windowEl.style.width = options.width || '70vw'; windowEl.style.height = options.height || '80vh';
+            windowEl.style.top = `${10 + (document.querySelectorAll('.window').length * 2)}%`; windowEl.style.left = `${15 + (document.querySelectorAll('.window').length * 2)}%`;
+            windowEl.style.zIndex = highestZ; let contentHTML = '';
+            if (app.type === 'iframe' || options.type === 'iframe') { contentHTML = `<iframe src="${options.src || app.iframeSrc}"></iframe>`; }
+            else if (app.type === 'filesystem') { contentHTML = `<div class="file-explorer-header"><span class="back-button"><i class="fas fa-arrow-left"></i></span><div class="breadcrumbs"></div></div><div class="file-explorer-content"></div>`; }
+            windowEl.innerHTML = `<div class="window-header"><div class="window-controls"><span class="window-control close"></span></div><div class="window-title">${options.name || app.name}</div></div><div class="window-content">${contentHTML}</div>`;
+            desktop.appendChild(windowEl); makeDraggable(windowEl, windowEl.querySelector('.window-header'));
+            windowEl.querySelector('.close').addEventListener('click', () => windowEl.remove());
+            windowEl.addEventListener('mousedown', () => bringToFront(windowEl));
+            if (app.type === 'filesystem') {
+                renderFileSystem(windowEl, 'root');
+                windowEl.querySelector('.file-explorer-content').addEventListener('contextmenu', e => {
+                    e.preventDefault(); e.stopPropagation();
+                    currentAppContext = { window: windowEl, folderId: windowEl.dataset.currentFolder };
+                    const currentFolder = fileSystem[currentAppContext.folderId];
+                    const fsContextMenu = document.getElementById('fs-context-menu');
+                    document.getElementById('fs-new-subject').style.display = currentFolder.type === 'root' ? 'flex' : 'none';
+                    document.getElementById('fs-new-chapter').style.display = currentFolder.type === 'subject' ? 'flex' : 'none';
+                    fsContextMenu.style.top = `${e.clientY}px`; fsContextMenu.style.left = `${e.clientX}px`;
+                    fsContextMenu.style.display = 'block';
+                });
+            }
+            return windowEl;
+        }
+
+        function renderFileSystem(windowEl, folderId) {
+            windowEl.dataset.currentFolder = folderId; const folder = fileSystem[folderId];
+            const contentEl = windowEl.querySelector('.file-explorer-content');
+            const breadcrumbsEl = windowEl.querySelector('.breadcrumbs');
+            const backButton = windowEl.querySelector('.back-button');
+            contentEl.innerHTML = ''; let path = []; let current = folder;
+            while (current) { path.unshift(current); current = fileSystem[current.parent]; }
+            breadcrumbsEl.innerHTML = path.map(p => `<span class="breadcrumb-item" data-id="${p.id}">${p.name}</span>`).join(' / ');
+            breadcrumbsEl.querySelectorAll('.breadcrumb-item').forEach(b => b.addEventListener('click', () => renderFileSystem(windowEl, b.dataset.id)));
+            backButton.style.visibility = folder.parent ? 'visible' : 'hidden';
+            backButton.onclick = () => renderFileSystem(windowEl, folder.parent);
+
+            const itemsToRender = folder.type === 'subject' ? folder.children : folder.children.map(id => fileSystem[id]);
+            
+            itemsToRender.forEach(item => {
+                if (item.type === 'subject' || item.type === 'root') { // This is a subject folder
+                    const itemEl = document.createElement('div'); itemEl.className = 'fs-item';
+                    itemEl.innerHTML = `<div class="fs-item-icon-container"><i class="fas fa-book"></i></div><span>${item.name}</span>`;
+                    itemEl.addEventListener('dblclick', () => renderFileSystem(windowEl, item.id));
+                    contentEl.appendChild(itemEl);
+                } else if (item.type === 'chapter') { // This is a chapter inside a subject
+                    const itemEl = document.createElement('div'); itemEl.className = 'fs-item';
+                    itemEl.innerHTML = `<div class="fs-item-icon-container"><i class="fas fa-book-reader"></i></div><span>${item.name}</span>`;
+                    itemEl.addEventListener('dblclick', () => {
+                        windowEl.dataset.currentFolder = item.id; // Not a real folder, but for context
+                        contentEl.innerHTML = '';
+                        // Render Link Icon
+                        const linkEl = document.createElement('div'); linkEl.className = 'fs-item';
+                        linkEl.innerHTML = `<div class="fs-item-icon-container"><img src="${item.notebookLM_iconUrl}" alt=""></div><span>NotebookLM</span>`;
+                        linkEl.addEventListener('dblclick', () => window.open(item.notebookLM_targetUrl, '_blank'));
+                        contentEl.appendChild(linkEl);
+                        // Render Notebook Icon
+                        const notebookEl = document.createElement('div'); notebookEl.className = 'fs-item';
+                        notebookEl.innerHTML = `<div class="fs-item-icon-container"><i class="fas fa-file-alt"></i></div><span>Cours (Drive)</span>`;
+                        notebookEl.addEventListener('dblclick', () => window.open(item.cour_targetUrl, '_blank'));
+                        contentEl.appendChild(notebookEl);
+                    });
+                    contentEl.appendChild(itemEl);
+                }
+            });
+        }
+        
+        function createNewSubject(parentFolderId) {
+            const name = prompt("Nom de la nouvelle matière :"); if (!name) return;
+            const id = `subject-${Date.now()}`;
+            fileSystem[id] = { id, name, type: 'subject', parent: parentFolderId, children: [] };
+            fileSystem[parentFolderId].children.push(id);
+            renderFileSystem(currentAppContext.window, parentFolderId);
+        }
+
+        function createNewChapter(parentFolderId) {
+            const name = prompt("Nom du nouveau chapitre :"); if (!name) return;
+            const notebookLM_iconUrl = prompt("URL de l'image pour l'icône NotebookLM :", "https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png"); if (!notebookLM_iconUrl) return;
+            const notebookLM_targetUrl = prompt("URL cible pour NotebookLM :", "https://notebooklm.google.com/"); if (!notebookLM_targetUrl) return;
+            const cour_targetUrl = prompt("URL cible pour le cours (Google Drive) :", "https://drive.google.com/"); if (!cour_targetUrl) return;
+            const id = `chapter-${Date.now()}`;
+            fileSystem[parentFolderId].children.push({ id, name, type: 'chapter', notebookLM_iconUrl, notebookLM_targetUrl, cour_targetUrl });
+            renderFileSystem(currentAppContext.window, parentFolderId);
+        }
+
+        function bringToFront(windowEl) { highestZ++; windowEl.style.zIndex = highestZ; }
+        function setDate() { const now = new Date(); document.getElementById('tray-clock').textContent = now.toLocaleTimeString('fr-FR'); document.getElementById('tray-date').textContent = now.toLocaleDateString('fr-FR'); }
+        setInterval(setDate, 1000); setDate();
+
+        function openApp(appId, options = {}) {
+            const app = appId ? APPS.find(a => a.id === appId) : {}; const finalApp = { ...app, ...options };
+            if (finalApp.type === 'link') { window.open(finalApp.href, '_blank'); }
+            else { const windowId = `window-${options.id || appId}`; const existingWindow = document.getElementById(windowId); if (existingWindow) bringToFront(existingWindow); else createWindow(finalApp, options); }
+        }
+        
+        function attachIconListeners() {
+             document.querySelectorAll('.desktop-icon').forEach(icon => {
+                icon.addEventListener('dblclick', () => openApp(icon.dataset.appId));
+                icon.addEventListener('contextmenu', e => { e.preventDefault(); activeIcon = icon; const contextMenu = document.getElementById('desktop-context-menu'); contextMenu.style.top = `${e.clientY}px`; contextMenu.style.left = `${e.clientX}px`; contextMenu.style.display = 'block'; });
+            });
+            document.querySelectorAll('.start-menu-item').forEach(item => { item.addEventListener('click', () => { openApp(item.dataset.appId); document.getElementById('start-menu').classList.remove('visible'); }); });
+        }
+        
+        window.addEventListener('click', e => {
+            document.getElementById('desktop-context-menu').style.display = 'none'; document.getElementById('fs-context-menu').style.display = 'none';
+            const startMenu = document.getElementById('start-menu'); const startButton = document.getElementById('start-button');
+            if (startMenu.classList.contains('visible') && !startMenu.contains(e.target) && !startButton.contains(e.target)) { startMenu.classList.remove('visible'); }
+        });
+        
+        document.getElementById('start-button').addEventListener('click', () => document.getElementById('start-menu').classList.toggle('visible'));
+        document.getElementById('open-app').addEventListener('click', () => { if (activeIcon) openApp(activeIcon.dataset.appId); });
+        document.getElementById('pin-to-taskbar').addEventListener('click', () => {
+            if (!activeIcon) return; const app = APPS.find(a => a.id === activeIcon.dataset.appId); if (!app || document.querySelector(`.taskbar-item[data-app-id="${app.id}"]`)) return;
+            const newPin = document.createElement('li'); newPin.className = 'taskbar-item'; newPin.dataset.appId = app.id;
+            newPin.innerHTML = `<a href="#" class="taskbar-item__link"><img src="${app.icon}" alt="${app.name}" class="image"></a>`;
+            document.querySelector('.taskbar-center .taskbar-list').appendChild(newPin); newPin.addEventListener('click', e => { e.preventDefault(); openApp(app.id); });
+        });
+        document.getElementById('fs-new-subject').addEventListener('click', () => createNewSubject(currentAppContext.folderId));
+        document.getElementById('fs-new-chapter').addEventListener('click', () => createNewChapter(currentAppContext.folderId));
+
+        function makeDraggable(element, handle) {
+            let isDragging = false; let startX, startY, initialX, initialY;
+            const dragStart = (e) => { const event = e.touches ? e.touches[0] : e; if (event.button !== 0 && e.type === 'mousedown') return; e.preventDefault(); isDragging = true; element.style.transition = 'none'; startX = event.clientX; startY = event.clientY; initialX = element.offsetLeft; initialY = element.offsetTop; document.addEventListener('mousemove', dragMove); document.addEventListener('mouseup', dragEnd); document.addEventListener('touchmove', dragMove, { passive: false }); document.addEventListener('touchend', dragEnd); };
+            const dragMove = (e) => { if (!isDragging) return; const event = e.touches ? e.touches[0] : e; const dx = event.clientX - startX; const dy = event.clientY - startY; element.style.left = `${initialX + dx}px`; element.style.top = `${initialY + dy}px`; };
+            const dragEnd = () => { if (!isDragging) return; isDragging = false; if (element.classList.contains('desktop-icon')) { const finalLeft = Math.round(element.offsetLeft / GRID_SIZE) * GRID_SIZE + (GRID_SIZE / 4); const finalTop = Math.round(element.offsetTop / GRID_SIZE) * GRID_SIZE + (GRID_SIZE / 4); element.style.transition = 'top 0.2s ease-out, left 0.2s ease-out'; element.style.left = `${finalLeft}px`; element.style.top = `${finalTop}px`; } document.removeEventListener('mousemove', dragMove); document.removeEventListener('mouseup', dragEnd); document.removeEventListener('touchmove', dragMove); document.removeEventListener('touchend', dragEnd); };
+            handle.addEventListener('mousedown', dragStart); handle.addEventListener('touchstart', dragStart);
+        }
+
+        function initializeTaskbarAnimations() {
+            const items = Array.from(document.querySelectorAll('.taskbar-item'));
+            const toggle = (index, offset, className, add) => { const sibling = items[index + offset]; if (sibling) sibling.classList.toggle(className, add); };
+            items.forEach((item, index) => { item.addEventListener('mouseenter', () => { item.classList.add('hover'); toggle(index, -1, 'sibling-close', true); toggle(index, 1, 'sibling-close', true); toggle(index, -2, 'sibling-far', true); toggle(index, 2, 'sibling-far', true); }); item.addEventListener('mouseleave', () => { item.classList.remove('hover'); toggle(index, -1, 'sibling-close', false); toggle(index, 1, 'sibling-close', false); toggle(index, -2, 'sibling-far', false); toggle(index, 2, 'sibling-far', false); }); });
+        }
+        let taskbarObserver = new MutationObserver(() => initializeTaskbarAnimations());
+        taskbarObserver.observe(document.querySelector('.taskbar-list'), { childList: true });
+        
+        renderDesktop();
+        initializeTaskbarAnimations();
+    });
+    </script>
+</body>
+</html>
