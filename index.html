@@ -18,6 +18,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: url('https://res.cloudinary.com/dzmyybvbu/image/upload/v1741207281/naw6jwove44lhvicmjfs.jpg') center/cover no-repeat;
             color: #f0f0f0; margin: 0; height: 100vh; width: 100vw; overflow: hidden;
+            overscroll-behavior-y: contain; /* Empêche le "pull-to-refresh" sur mobile */
         }
 
         .desktop { position: relative; width: 100%; height: 100%; }
@@ -115,6 +116,96 @@
         .context-menu-item { padding: 10px 15px; font-size: 14px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; }
         .context-menu-item:hover { background-color: rgba(255,255,255,0.1); }
         .context-menu-item i { margin-right: 10px; width: 16px; text-align: center; }
+
+        /* --- Responsive Design for Tablet & Mobile --- */
+        @media (max-width: 1024px) {
+            .window {
+                min-width: 450px;
+                min-height: 350px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --icon-size: 50px; /* Icônes plus petites sur mobile */
+            }
+
+            .desktop-icon {
+                width: 80px; /* Conteneur d'icône plus petit */
+            }
+
+            .icon-label {
+                font-size: 12px; /* Texte plus petit */
+                line-height: 1.2;
+            }
+
+            .window {
+                /* Fenêtres en plein écran sur mobile */
+                width: 100% !important;
+                height: 100% !important;
+                top: 0 !important;
+                left: 0 !important;
+                border-radius: 0;
+                border: none;
+                min-width: unset;
+                min-height: unset;
+                transform: none !important;
+                resize: none; /* Désactive le redimensionnement sur les appareils tactiles */
+            }
+
+            .window-header {
+                height: 40px; /* En-tête légèrement plus haute pour un toucher plus facile */
+                padding: 0 15px;
+            }
+
+            .taskbar-container {
+                height: 60px; /* Barre des tâches légèrement plus petite */
+                padding: 0 8px;
+            }
+            
+            .taskbar-center {
+                padding: 5px;
+            }
+
+            .taskbar-item {
+                width: 42px; /* Icônes de la barre des tâches plus petites */
+                height: 42px;
+                margin: 0 2px;
+            }
+            
+            /* Désactive les animations de survol sur les appareils tactiles */
+            .taskbar-item.hover .taskbar-item__link,
+            .taskbar-item.sibling-close .taskbar-item__link,
+            .taskbar-item.sibling-far .taskbar-item__link {
+                transform: none;
+            }
+
+            #start-button {
+                width: 42px;
+                height: 42px;
+            }
+
+            #start-menu {
+                width: calc(100vw - 20px); /* Presque toute la largeur */
+                left: 10px;
+                bottom: 70px; /* Position au-dessus de la nouvelle hauteur de la barre des tâches */
+                height: 60vh;
+            }
+            
+            .system-tray {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .file-explorer-content {
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .fs-item {
+                width: 90px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -145,209 +236,17 @@
         const startMenuList = document.querySelector('.start-menu-list');
 
         let fileSystem = {
-    // Le dossier racine qui contient toutes les matières
-    'root': { 
-        id: 'root', 
-        name: 'Mes Cours', 
-        type: 'root', 
-        parent: null, 
-        children: [
-            'subj1', 'subj2', 'subj3', 'subj4', 'subj5', 'subj6', 'subj7', 'subj8', 'subj9'
-        ] 
-    },
-
-    // --- Matières ---
-
-    'subj1': { 
-        id: 'subj1', 
-        name: 'SC.PHYS.& PHYS.APPLI [LA CROIX C.]', 
-        type: 'subject', 
-        parent: 'root', 
-        children: [
-            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
-            // pour ajouter d'autres chapitres dans n'importe quelle matière.
-            { 
-                id: 'math-chap1', 
-                name: 'Chapitre 1: Les Dérivées', 
-                type: 'chapter', 
-                // Lien de l'image pour l'icône NotebookLM
-                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
-                // Lien cible de l'icône NotebookLM
-                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
-                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
-                cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' 
-            }
-        ]  // Vous pouvez ajouter vos chapitres ici
-    },
-    'subj2': { 
-        id: 'subj2', 
-        name: 'PHYSIQUE-CHIMIE [FAU G.]', 
-        type: 'subject', 
-        parent: 'root', 
-        children: [
-            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
-            // pour ajouter d'autres chapitres dans n'importe quelle matière.
-            { 
-                id: 'math-chap1', 
-                name: 'Chapitre 1: Les Dérivées', 
-                type: 'chapter', 
-                // Lien de l'image pour l'icône NotebookLM
-                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
-                // Lien cible de l'icône NotebookLM
-                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
-                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
-                cour_targetUrl: 'https://drive.google.com/drive/folders/1ppvyAy1mkO68M7w7ppIatoY4un-nYRzz?usp=drive_link' 
-            }
-        ]  
-    },
-    'subj3': { 
-        id: 'subj3', 
-        name: 'MATHEMATIQUES [HERVIEUX D.]', 
-        type: 'subject', 
-        parent: 'root', 
-        children: [
-            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
-            // pour ajouter d'autres chapitres dans n'importe quelle matière.
-            { 
-                id: 'math-chap1', 
-                name: 'Chapitre 1: Les Dérivées', 
-                type: 'chapter', 
-                // Lien de l'image pour l'icône NotebookLM
-                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
-                // Lien cible de l'icône NotebookLM
-                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
-                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
-                cour_targetUrl: 'https://drive.google.com/drive/folders/1Tk9_VKPKtqDGxXHAd1u37I8jGrBz9tQD?usp=drive_link' 
-            }
-        ] 
-    },
-    'subj4': { 
-        id: 'subj4', 
-        name: 'PHYSIQUE-CHIMIE [LEMONNIER J.]', 
-        type: 'subject', 
-        parent: 'root', 
-        children: [
-            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
-            // pour ajouter d'autres chapitres dans n'importe quelle matière.
-            { 
-                id: 'math-chap1', 
-                name: 'Chapitre 1: Les Dérivées', 
-                type: 'chapter', 
-                // Lien de l'image pour l'icône NotebookLM
-                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
-                // Lien cible de l'icône NotebookLM
-                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
-                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
-                cour_targetUrl: 'https://drive.google.com/drive/folders/1ppvyAy1mkO68M7w7ppIatoY4un-nYRzz?usp=sharing' 
-            }
-        ]  
-    },
-    'subj5': { 
-        id: 'subj5', 
-        name: 'CULTURE GENE.ET EXPR [LE BRUN A.]', 
-        type: 'subject', 
-        parent: 'root', 
-        children: [
-            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
-            // pour ajouter d'autres chapitres dans n'importe quelle matière.
-            { 
-                id: 'math-chap1', 
-                name: 'Chapitre 1: Les Dérivées', 
-                type: 'chapter', 
-                // Lien de l'image pour l'icône NotebookLM
-                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
-                // Lien cible de l'icône NotebookLM
-                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
-                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
-                cour_targetUrl: 'https://drive.google.com/drive/folders/1_C2wmVkgZtEtZ6pTbsyhNJbNindjChKJ?usp=drive_link' 
-            }
-        ] 
-    },
-    'subj6': { 
-        id: 'subj6', 
-        name: 'SC. TECHNIQUES IND. [LE BRIS P.]', 
-        type: 'subject', 
-        parent: 'root', 
-        children: [
-            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
-            // pour ajouter d'autres chapitres dans n'importe quelle matière.
-            { 
-                id: 'math-chap1', 
-                name: 'Chapitre 1: Les Dérivées', 
-                type: 'chapter', 
-                // Lien de l'image pour l'icône NotebookLM
-                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
-                // Lien cible de l'icône NotebookLM
-                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
-                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
-                cour_targetUrl: 'https://drive.google.com/file/mon-cours-sur-les-derivees' 
-            }
-        ] 
-    },
-    'subj7': { 
-        id: 'subj7', 
-        name: 'SC. TECHNIQUES IND. [VENNEGUES E.]', 
-        type: 'subject', 
-        parent: 'root', 
-        children: [
-            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
-            // pour ajouter d'autres chapitres dans n'importe quelle matière.
-            { 
-                id: 'math-chap1', 
-                name: 'Chapitre 1: Les Dérivées', 
-                type: 'chapter', 
-                // Lien de l'image pour l'icône NotebookLM
-                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
-                // Lien cible de l'icône NotebookLM
-                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
-                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
-                cour_targetUrl: 'https://drive.google.com/drive/folders/1ZlqfdZaGCqnseefRmZP8fRecfwXMWOjt?usp=drive_link' 
-            }
-        ] 
-    },
-    'subj8': { 
-        id: 'subj8', 
-        name: 'ANGLAIS LV1 [ESCOLA N.]', 
-        type: 'subject', 
-        parent: 'root', 
-        children: [
-            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
-            // pour ajouter d'autres chapitres dans n'importe quelle matière.
-            { 
-                id: 'math-chap1', 
-                name: 'Chapitre 1: Les Dérivées', 
-                type: 'chapter', 
-                // Lien de l'image pour l'icône NotebookLM
-                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
-                // Lien cible de l'icône NotebookLM
-                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
-                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
-                cour_targetUrl: 'https://drive.google.com/drive/folders/1BXzVTQXB0ggaxDAt4KE7gCf-fQhfJddk?usp=drive_link' 
-            }
-        ] 
-    },
-    'subj9': { 
-        id: 'subj9', 
-        name: 'ANGLAIS LV1 PRO [ESCOLA N., LE BRIS P.]', 
-        type: 'subject', 
-        parent: 'root', 
-        children: [
-            // Voici un exemple de chapitre. Vous pouvez copier/coller et modifier cet objet
-            // pour ajouter d'autres chapitres dans n'importe quelle matière.
-            { 
-                id: 'math-chap1', 
-                name: 'Chapitre 1: Les Dérivées', 
-                type: 'chapter', 
-                // Lien de l'image pour l'icône NotebookLM
-                notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', 
-                // Lien cible de l'icône NotebookLM
-                notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', 
-                // Lien cible de l'icône "Cours" (vers Google Drive par exemple)
-                cour_targetUrl: 'https://drive.google.com/file/mon-cours-sur-les-derivees' 
-            }
-        ] 
-    },
-};
+            'root': { id: 'root', name: 'Mes Cours', type: 'root', parent: null, children: ['subj1', 'subj2', 'subj3', 'subj4', 'subj5', 'subj6', 'subj7', 'subj8', 'subj9'] },
+            'subj1': { id: 'subj1', name: 'SC.PHYS.& PHYS.APPLI [LA CROIX C.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' }] },
+            'subj2': { id: 'subj2', name: 'PHYSIQUE-CHIMIE [FAU G.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1ppvyAy1mkO68M7w7ppIatoY4un-nYRzz?usp=drive_link' }] },
+            'subj3': { id: 'subj3', name: 'MATHEMATIQUES [HERVIEUX D.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1Tk9_VKPKtqDGxXHAd1u37I8jGrBz9tQD?usp=drive_link' }] },
+            'subj4': { id: 'subj4', name: 'PHYSIQUE-CHIMIE [LEMONNIER J.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1ppvyAy1mkO68M7w7ppIatoY4un-nYRzz?usp=sharing' }] },
+            'subj5': { id: 'subj5', name: 'CULTURE GENE.ET EXPR [LE BRUN A.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1_C2wmVkgZtEtZ6pTbsyhNJbNindjChKJ?usp=drive_link' }] },
+            'subj6': { id: 'subj6', name: 'SC. TECHNIQUES IND. [LE BRIS P.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/file/mon-cours-sur-les-derivees' }] },
+            'subj7': { id: 'subj7', name: 'SC. TECHNIQUES IND. [VENNEGUES E.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1ZlqfdZaGCqnseefRmZP8fRecfwXMWOjt?usp=drive_link' }] },
+            'subj8': { id: 'subj8', name: 'ANGLAIS LV1 [ESCOLA N.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1BXzVTQXB0ggaxDAt4KE7gCf-fQhfJddk?usp=drive_link' }] },
+            'subj9': { id: 'subj9', name: 'ANGLAIS LV1 PRO [ESCOLA N., LE BRIS P.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/file/mon-cours-sur-les-derivees' }] },
+        };
 
         const APPS = [
             { id: 'cours', name: 'Mes Cours', icon: 'https://res.cloudinary.com/dzmyybvbu/image/upload/v1759262950/Webinar-Icons-04_rswot9.png', type: 'filesystem' },
@@ -385,7 +284,9 @@
             windowEl.addEventListener('mousedown', () => bringToFront(windowEl));
             if (app.type === 'filesystem') {
                 renderFileSystem(windowEl, 'root');
-                windowEl.querySelector('.file-explorer-content').addEventListener('contextmenu', e => {
+                const fsContent = windowEl.querySelector('.file-explorer-content');
+                
+                fsContent.addEventListener('contextmenu', e => {
                     e.preventDefault(); e.stopPropagation();
                     currentAppContext = { window: windowEl, folderId: windowEl.dataset.currentFolder };
                     const currentFolder = fileSystem[currentAppContext.folderId];
@@ -395,6 +296,23 @@
                     fsContextMenu.style.top = `${e.clientY}px`; fsContextMenu.style.left = `${e.clientX}px`;
                     fsContextMenu.style.display = 'block';
                 });
+                
+                let pressTimer;
+                fsContent.addEventListener('touchstart', e => {
+                    pressTimer = window.setTimeout(() => {
+                        e.preventDefault(); e.stopPropagation();
+                        currentAppContext = { window: windowEl, folderId: windowEl.dataset.currentFolder };
+                        const currentFolder = fileSystem[currentAppContext.folderId];
+                        const fsContextMenu = document.getElementById('fs-context-menu');
+                        document.getElementById('fs-new-subject').style.display = currentFolder.type === 'root' ? 'flex' : 'none';
+                        document.getElementById('fs-new-chapter').style.display = currentFolder.type === 'subject' ? 'flex' : 'none';
+                        const touch = e.touches[0];
+                        fsContextMenu.style.top = `${touch.clientY}px`; fsContextMenu.style.left = `${touch.clientX}px`;
+                        fsContextMenu.style.display = 'block';
+                    }, 500);
+                });
+                fsContent.addEventListener('touchend', () => clearTimeout(pressTimer));
+                fsContent.addEventListener('touchmove', () => clearTimeout(pressTimer));
             }
             return windowEl;
         }
@@ -414,26 +332,24 @@
             const itemsToRender = folder.type === 'subject' ? folder.children : folder.children.map(id => fileSystem[id]);
             
             itemsToRender.forEach(item => {
-                if (item.type === 'subject' || item.type === 'root') { // This is a subject folder
+                if (item.type === 'subject' || item.type === 'root') {
                     const itemEl = document.createElement('div'); itemEl.className = 'fs-item';
                     itemEl.innerHTML = `<div class="fs-item-icon-container"><i class="fas fa-book"></i></div><span>${item.name}</span>`;
-                    itemEl.addEventListener('dblclick', () => renderFileSystem(windowEl, item.id));
+                    itemEl.addEventListener('click', () => renderFileSystem(windowEl, item.id));
                     contentEl.appendChild(itemEl);
-                } else if (item.type === 'chapter') { // This is a chapter inside a subject
+                } else if (item.type === 'chapter') {
                     const itemEl = document.createElement('div'); itemEl.className = 'fs-item';
                     itemEl.innerHTML = `<div class="fs-item-icon-container"><i class="fas fa-book-reader"></i></div><span>${item.name}</span>`;
-                    itemEl.addEventListener('dblclick', () => {
-                        windowEl.dataset.currentFolder = item.id; // Not a real folder, but for context
+                    itemEl.addEventListener('click', () => {
+                        windowEl.dataset.currentFolder = item.id;
                         contentEl.innerHTML = '';
-                        // Render Link Icon
                         const linkEl = document.createElement('div'); linkEl.className = 'fs-item';
                         linkEl.innerHTML = `<div class="fs-item-icon-container"><img src="${item.notebookLM_iconUrl}" alt=""></div><span>NotebookLM</span>`;
-                        linkEl.addEventListener('dblclick', () => window.open(item.notebookLM_targetUrl, '_blank'));
+                        linkEl.addEventListener('click', () => window.open(item.notebookLM_targetUrl, '_blank'));
                         contentEl.appendChild(linkEl);
-                        // Render Notebook Icon
                         const notebookEl = document.createElement('div'); notebookEl.className = 'fs-item';
                         notebookEl.innerHTML = `<div class="fs-item-icon-container"><i class="fas fa-file-alt"></i></div><span>Cours (Drive)</span>`;
-                        notebookEl.addEventListener('dblclick', () => window.open(item.cour_targetUrl, '_blank'));
+                        notebookEl.addEventListener('click', () => window.open(item.cour_targetUrl, '_blank'));
                         contentEl.appendChild(notebookEl);
                     });
                     contentEl.appendChild(itemEl);
@@ -470,11 +386,54 @@
         }
         
         function attachIconListeners() {
-             document.querySelectorAll('.desktop-icon').forEach(icon => {
-                icon.addEventListener('dblclick', () => openApp(icon.dataset.appId));
-                icon.addEventListener('contextmenu', e => { e.preventDefault(); activeIcon = icon; const contextMenu = document.getElementById('desktop-context-menu'); contextMenu.style.top = `${e.clientY}px`; contextMenu.style.left = `${e.clientX}px`; contextMenu.style.display = 'block'; });
+            document.querySelectorAll('.desktop-icon').forEach(icon => {
+                let pressTimer;
+                let longPressTriggered = false;
+
+                // Pour la souris : Clic droit
+                icon.addEventListener('contextmenu', e => {
+                    e.preventDefault();
+                    activeIcon = icon;
+                    const contextMenu = document.getElementById('desktop-context-menu');
+                    contextMenu.style.top = `${e.clientY}px`;
+                    contextMenu.style.left = `${e.clientX}px`;
+                    contextMenu.style.display = 'block';
+                });
+
+                // Pour le tactile : Appui long
+                icon.addEventListener('touchstart', e => {
+                    longPressTriggered = false;
+                    pressTimer = window.setTimeout(() => {
+                        e.preventDefault();
+                        longPressTriggered = true;
+                        activeIcon = icon;
+                        const contextMenu = document.getElementById('desktop-context-menu');
+                        const touch = e.touches[0];
+                        contextMenu.style.top = `${touch.clientY}px`;
+                        contextMenu.style.left = `${touch.clientX}px`;
+                        contextMenu.style.display = 'block';
+                    }, 500);
+                });
+
+                icon.addEventListener('touchend', () => clearTimeout(pressTimer));
+                icon.addEventListener('touchmove', () => clearTimeout(pressTimer));
+
+                // Pour la souris : Clic simple / Pour le tactile : Tap
+                icon.addEventListener('click', (e) => {
+                    if (longPressTriggered) {
+                        e.preventDefault();
+                        return;
+                    }
+                    openApp(icon.dataset.appId);
+                });
             });
-            document.querySelectorAll('.start-menu-item').forEach(item => { item.addEventListener('click', () => { openApp(item.dataset.appId); document.getElementById('start-menu').classList.remove('visible'); }); });
+
+            document.querySelectorAll('.start-menu-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    openApp(item.dataset.appId);
+                    document.getElementById('start-menu').classList.remove('visible');
+                });
+            });
         }
         
         window.addEventListener('click', e => {
