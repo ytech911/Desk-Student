@@ -18,7 +18,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: url('https://res.cloudinary.com/dzmyybvbu/image/upload/v1741207281/naw6jwove44lhvicmjfs.jpg') center/cover no-repeat;
             color: #f0f0f0; margin: 0; height: 100vh; width: 100vw; overflow: hidden;
-            overscroll-behavior-y: contain; /* Empêche le "pull-to-refresh" sur mobile */
+            overscroll-behavior-y: contain;
         }
 
         .desktop { position: relative; width: 100%; height: 100%; }
@@ -52,9 +52,16 @@
             border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 20px var(--shadow-color);
         }
         .taskbar-list { display: flex; list-style: none; margin: 0; padding: 0; }
-        .taskbar-item { width: 45px; height: 45px; margin: 0 4px; }
+        .taskbar-item { width: 45px; height: 45px; margin: 0 4px; position: relative; }
         .taskbar-item__link { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; transition: transform 0.2s cubic-bezier(.16, 1, .3, 1); }
         .taskbar-item .image { width: 85%; object-fit: contain; }
+        .taskbar-item .indicator {
+            position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 3px; background-color: #f0f0f0; border-radius: 2px;
+            transition: width 0.2s ease;
+        }
+        .taskbar-item.is-open .indicator { width: 30%; }
+        .taskbar-item.is-active .indicator { width: 70%; }
         .taskbar-item.hover .taskbar-item__link { transform: scale(1.5) translateY(-8px); }
         .taskbar-item.sibling-close .taskbar-item__link { transform: scale(1.2) translateY(-4px); }
         .taskbar-item.sibling-far .taskbar-item__link { transform: scale(1.1); }
@@ -84,12 +91,20 @@
             border-radius: var(--border-radius-large); box-shadow: 0 10px 30px var(--shadow-color);
             display: flex; flex-direction: column; border: 1px solid rgba(255, 255, 255, 0.15);
             resize: both; overflow: hidden; min-width: 500px; min-height: 400px;
+            transition: width 0.2s ease, height 0.2s ease, top 0.2s ease, left 0.2s ease, border-radius 0.2s ease;
+        }
+        .window.maximized {
+            width: 100% !important; height: 100% !important; top: 0 !important; left: 0 !important;
+            border-radius: 0; resize: none;
         }
         .window-header { display: flex; align-items: center; padding: 0 12px; height: 36px; background-color: rgba(0, 0, 0, 0.2); cursor: grab; flex-shrink: 0; }
         .window-header:active { cursor: grabbing; }
         .window-controls { display: flex; gap: 8px; }
         .window-control { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; }
+        .window-control:hover { filter: brightness(1.2); }
         .close { background: #ff5f56; }
+        .minimize { background: #ffbd2e; }
+        .maximize { background: #27c93f; }
         .window-title { flex-grow: 1; text-align: center; font-size: 14px; user-select: none; }
         .window-content { padding: 0; flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; }
         .window-content iframe { width: 100%; height: 100%; border: none; }
@@ -116,95 +131,29 @@
         .context-menu-item { padding: 10px 15px; font-size: 14px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; }
         .context-menu-item:hover { background-color: rgba(255,255,255,0.1); }
         .context-menu-item i { margin-right: 10px; width: 16px; text-align: center; }
+        .context-menu-separator { height: 1px; background-color: rgba(255,255,255,0.1); margin: 6px 0; }
 
-        /* --- Responsive Design for Tablet & Mobile --- */
-        @media (max-width: 1024px) {
-            .window {
-                min-width: 450px;
-                min-height: 350px;
-            }
-        }
-
+        /* --- Responsive Design --- */
         @media (max-width: 768px) {
-            :root {
-                --icon-size: 50px; /* Icônes plus petites sur mobile */
-            }
-
-            .desktop-icon {
-                width: 80px; /* Conteneur d'icône plus petit */
-            }
-
-            .icon-label {
-                font-size: 12px; /* Texte plus petit */
-                line-height: 1.2;
-            }
-
+            :root { --icon-size: 50px; }
+            .desktop-icon { width: 80px; cursor: pointer; }
+            .desktop-icon:active { cursor: pointer; }
+            .icon-label { font-size: 12px; line-height: 1.2; }
             .window {
-                /* Fenêtres en plein écran sur mobile */
-                width: 100% !important;
-                height: 100% !important;
-                top: 0 !important;
-                left: 0 !important;
-                border-radius: 0;
-                border: none;
-                min-width: unset;
-                min-height: unset;
-                transform: none !important;
-                resize: none; /* Désactive le redimensionnement sur les appareils tactiles */
+                width: 100% !important; height: 100% !important; top: 0 !important; left: 0 !important;
+                border-radius: 0; border: none; min-width: unset; min-height: unset; transform: none !important; resize: none;
             }
-
-            .window-header {
-                height: 40px; /* En-tête légèrement plus haute pour un toucher plus facile */
-                padding: 0 15px;
-            }
-
-            .taskbar-container {
-                height: 60px; /* Barre des tâches légèrement plus petite */
-                padding: 0 8px;
-            }
-            
-            .taskbar-center {
-                padding: 5px;
-            }
-
-            .taskbar-item {
-                width: 42px; /* Icônes de la barre des tâches plus petites */
-                height: 42px;
-                margin: 0 2px;
-            }
-            
-            /* Désactive les animations de survol sur les appareils tactiles */
-            .taskbar-item.hover .taskbar-item__link,
-            .taskbar-item.sibling-close .taskbar-item__link,
-            .taskbar-item.sibling-far .taskbar-item__link {
-                transform: none;
-            }
-
-            #start-button {
-                width: 42px;
-                height: 42px;
-            }
-
-            #start-menu {
-                width: calc(100vw - 20px); /* Presque toute la largeur */
-                left: 10px;
-                bottom: 70px; /* Position au-dessus de la nouvelle hauteur de la barre des tâches */
-                height: 60vh;
-            }
-            
-            .system-tray {
-                padding: 6px 10px;
-                font-size: 12px;
-            }
-
-            .file-explorer-content {
-                padding: 15px;
-                gap: 15px;
-            }
-
-            .fs-item {
-                width: 90px;
-            }
+            .window-header { height: 40px; padding: 0 15px; }
+            .window-title { text-align: center; padding-right: 60px; /* Espace pour les boutons */ }
+            .taskbar-container { height: 60px; padding: 0 8px; }
+            .taskbar-center { padding: 5px; }
+            .taskbar-item { width: 42px; height: 42px; margin: 0 2px; }
+            .taskbar-item.hover .taskbar-item__link, .taskbar-item.sibling-close .taskbar-item__link, .taskbar-item.sibling-far .taskbar-item__link { transform: none; }
+            #start-button { width: 42px; height: 42px; }
+            #start-menu { width: calc(100vw - 20px); left: 10px; bottom: 70px; height: 60vh; }
+            .system-tray { padding: 6px 10px; font-size: 12px; }
+            .file-explorer-content { padding: 15px; gap: 15px; }
+            .fs-item { width: 90px; }
         }
     </style>
 </head>
@@ -216,36 +165,51 @@
         <div class="taskbar-center"><nav class="taskbar-nav"><ul class="taskbar-list"></ul></nav></div>
         <div class="taskbar-right"><div class="system-tray"><div id="tray-clock"></div><div id="tray-date" style="opacity: 0.7;"></div></div></div>
     </div>
+    
+    <!-- CONTEXT MENUS -->
     <div id="desktop-context-menu" class="context-menu">
-        <div class="context-menu-item" id="open-app"><i class="fas fa-folder-open"></i>Ouvrir</div>
-        <div class="context-menu-item" id="pin-to-taskbar"><i class="fas fa-thumbtack"></i>Épingler au Centre</div>
+        <div class="context-menu-item" id="ctx-open"><i class="fas fa-folder-open"></i>Ouvrir</div>
+        <div class="context-menu-item" id="ctx-pin"><i class="fas fa-thumbtack"></i>Épingler à la barre des tâches</div>
     </div>
     <div id="fs-context-menu" class="context-menu">
         <div class="context-menu-item" id="fs-new-subject"><i class="fas fa-book-medical"></i>Nouvelle Matière</div>
         <div class="context-menu-item" id="fs-new-chapter"><i class="fas fa-plus-circle"></i>Nouveau Chapitre</div>
     </div>
+    <div id="taskbar-context-menu" class="context-menu">
+        <div class="context-menu-item" id="taskbar-ctx-open"><i class="fas fa-folder-open"></i>Ouvrir</div>
+        <div class="context-menu-item" id="taskbar-ctx-close"><i class="fas fa-times"></i>Fermer la fenêtre</div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item" id="taskbar-ctx-pin"><i class="fas fa-thumbtack"></i>Épingler</div>
+        <div class="context-menu-item" id="taskbar-ctx-unpin"><i class="fas fa-thumbtack"></i>Désépingler</div>
+    </div>
 
     <script>
     document.addEventListener("DOMContentLoaded", () => {
         const GRID_SIZE = 120;
+        const GRID_OFFSET = 30; // Offset consistent pour le placement et le snap
         let activeIcon = null;
+        let activeTaskbarApp = null;
         let highestZ = 2000;
         let currentAppContext = { window: null, folderId: null };
 
         const desktop = document.querySelector('.desktop');
         const startMenuList = document.querySelector('.start-menu-list');
+        const taskbarList = document.querySelector('.taskbar-list');
+
+        let openWindows = [];
+        let pinnedApps = [];
 
         let fileSystem = {
             'root': { id: 'root', name: 'Mes Cours', type: 'root', parent: null, children: ['subj1', 'subj2', 'subj3', 'subj4', 'subj5', 'subj6', 'subj7', 'subj8', 'subj9'] },
-            'subj1': { id: 'subj1', name: 'SC.PHYS.& PHYS.APPLI [LA CROIX C.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' }] },
-            'subj2': { id: 'subj2', name: 'PHYSIQUE-CHIMIE [FAU G.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1ppvyAy1mkO68M7w7ppIatoY4un-nYRzz?usp=drive_link' }] },
-            'subj3': { id: 'subj3', name: 'MATHEMATIQUES [HERVIEUX D.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1Tk9_VKPKtqDGxXHAd1u37I8jGrBz9tQD?usp=drive_link' }] },
-            'subj4': { id: 'subj4', name: 'PHYSIQUE-CHIMIE [LEMONNIER J.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1ppvyAy1mkO68M7w7ppIatoY4un-nYRzz?usp=sharing' }] },
-            'subj5': { id: 'subj5', name: 'CULTURE GENE.ET EXPR [LE BRUN A.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1_C2wmVkgZtEtZ6pTbsyhNJbNindjChKJ?usp=drive_link' }] },
-            'subj6': { id: 'subj6', name: 'SC. TECHNIQUES IND. [LE BRIS P.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/file/mon-cours-sur-les-derivees' }] },
-            'subj7': { id: 'subj7', name: 'SC. TECHNIQUES IND. [VENNEGUES E.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1ZlqfdZaGCqnseefRmZP8fRecfwXMWOjt?usp=drive_link' }] },
-            'subj8': { id: 'subj8', name: 'ANGLAIS LV1 [ESCOLA N.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1BXzVTQXB0ggaxDAt4KE7gCf-fQhfJddk?usp=drive_link' }] },
-            'subj9': { id: 'subj9', name: 'ANGLAIS LV1 PRO [ESCOLA N., LE BRIS P.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/file/mon-cours-sur-les-derivees' }] },
+            'subj1': { id: 'subj1', name: 'SC.PHYS.& PHYS.APPLI [LA CROIX C.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' }, { id: 'math-chap2', name: 'Chapitre 2: Les Intégrales', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' } , { id: 'math-chap3', name: 'Chapitre 3: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' }] },
+            'subj2': { id: 'subj2', name: 'PHYSIQUE-CHIMIE [FAU G.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1ppvyAy1mkO68M7w7ppIatoY4un-nYRzz?usp=drive_link' }, { id: 'math-chap2', name: 'Chapitre 2: Les Intégrales', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' } , { id: 'math-chap3', name: 'Chapitre 3: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' }] },
+            'subj3': { id: 'subj3', name: 'MATHEMATIQUES [HERVIEUX D.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1Tk9_VKPKtqDGxXHAd1u37I8jGrBz9tQD?usp=drive_link' }, { id: 'math-chap2', name: 'Chapitre 2: Les Intégrales', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' } , { id: 'math-chap3', name: 'Chapitre 3: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' }] },
+            'subj4': { id: 'subj4', name: 'PHYSIQUE-CHIMIE [LEMONNIER J.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1ppvyAy1mkO68M7w7ppIatoY4un-nYRzz?usp=sharing' }, { id: 'math-chap2', name: 'Chapitre 2: Les Intégrales', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' } , { id: 'math-chap3', name: 'Chapitre 3: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' }] },
+            'subj5': { id: 'subj5', name: 'CULTURE GENE.ET EXPR [LE BRUN A.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1_C2wmVkgZtEtZ6pTbsyhNJbNindjChKJ?usp=drive_link' }, { id: 'math-chap2', name: 'Chapitre 2: Les Intégrales', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' } , { id: 'math-chap3', name: 'Chapitre 3: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' }] },
+            'subj6': { id: 'subj6', name: 'SC. TECHNIQUES IND. [LE BRIS P.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/file/mon-cours-sur-les-derivees' }, { id: 'math-chap2', name: 'Chapitre 2: Les Intégrales', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' } , { id: 'math-chap3', name: 'Chapitre 3: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' }] },
+            'subj7': { id: 'subj7', name: 'SC. TECHNIQUES IND. [VENNEGUES E.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1ZlqfdZaGCqnseefRmZP8fRecfwXMWOjt?usp=drive_link' }, { id: 'math-chap2', name: 'Chapitre 2: Les Intégrales', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' } , { id: 'math-chap3', name: 'Chapitre 3: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' }] },
+            'subj8': { id: 'subj8', name: 'ANGLAIS LV1 [ESCOLA N.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1BXzVTQXB0ggaxDAt4KE7gCf-fQhfJddk?usp=drive_link' }, { id: 'math-chap2', name: 'Chapitre 2: Les Intégrales', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' } , { id: 'math-chap3', name: 'Chapitre 3: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' }] },
+            'subj9': { id: 'subj9', name: 'ANGLAIS LV1 PRO [ESCOLA N., LE BRIS P.]', type: 'subject', parent: 'root', children: [{ id: 'math-chap1', name: 'Chapitre 1: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/file/mon-cours-sur-les-derivees' }, { id: 'math-chap2', name: 'Chapitre 2: Les Intégrales', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' } , { id: 'math-chap3', name: 'Chapitre 3: Les Dérivées', type: 'chapter', notebookLM_iconUrl: 'https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png', notebookLM_targetUrl: 'https://notebooklm.google.com/notebook/mon-cahier-de-maths', cour_targetUrl: 'https://drive.google.com/drive/folders/1QJnWvqMGJ5wXIjN75JRdDYFrIZxV-XQD?usp=drive_link' }] },
         };
 
         const APPS = [
@@ -257,67 +221,410 @@
             { id: 'spotify', name: 'Spotify', icon: 'https://cdn.prod.website-files.com/6728a3e6f4f4161c235bc519/6728a6bea97e140677496dae_spotify.png', type: 'link', href: 'https://spotify.com' }
         ];
 
-        function renderDesktop() {
-            desktop.innerHTML = ''; startMenuList.innerHTML = '';
-            APPS.forEach((app, index) => {
-                const icon = document.createElement('div'); icon.className = 'desktop-icon'; icon.dataset.appId = app.id;
-                icon.style.left = `${40 + (index % 4) * GRID_SIZE}px`; icon.style.top = `${40 + Math.floor(index / 4) * GRID_SIZE}px`;
-                icon.innerHTML = `<img src="${app.icon}" alt="${app.name}" class="icon-image"><span class="icon-label">${app.name}</span>`;
-                desktop.appendChild(icon); makeDraggable(icon, icon);
-                const startItem = document.createElement('li'); startItem.className = 'start-menu-item'; startItem.dataset.appId = app.id;
-                startItem.innerHTML = `<img src="${app.icon}" alt="${app.name}"><span>${app.name}</span>`;
-                startMenuList.appendChild(startItem);
-            });
-            attachIconListeners();
+        // --- CORE FUNCTIONS ---
+
+        function getAppById(id) { return APPS.find(a => a.id === id); }
+        function getOpenWindowById(id) { return openWindows.find(w => w.id === id); }
+        function isAppPinned(appId) { return pinnedApps.includes(appId); }
+
+        function openApp(appId) {
+            const app = getAppById(appId);
+            if (!app) return;
+
+            if (app.type === 'link') {
+                window.open(app.href, '_blank');
+                return;
+            }
+
+            let openWindow = getOpenWindowById(app.id);
+            if (openWindow) {
+                if (openWindow.isMinimized) {
+                    openWindow.element.style.display = 'flex';
+                    openWindow.isMinimized = false;
+                }
+                bringToFront(openWindow.element);
+            } else {
+                createWindow(app);
+            }
+            updateTaskbar();
         }
 
-        function createWindow(app, options = {}) {
-            highestZ++; const windowEl = document.createElement('div'); windowEl.className = 'window'; windowEl.id = `window-${options.id || app.id}`;
-            windowEl.style.width = options.width || '70vw'; windowEl.style.height = options.height || '80vh';
-            windowEl.style.top = `${10 + (document.querySelectorAll('.window').length * 2)}%`; windowEl.style.left = `${15 + (document.querySelectorAll('.window').length * 2)}%`;
-            windowEl.style.zIndex = highestZ; let contentHTML = '';
-            if (app.type === 'iframe' || options.type === 'iframe') { contentHTML = `<iframe src="${options.src || app.iframeSrc}"></iframe>`; }
-            else if (app.type === 'filesystem') { contentHTML = `<div class="file-explorer-header"><span class="back-button"><i class="fas fa-arrow-left"></i></span><div class="breadcrumbs"></div></div><div class="file-explorer-content"></div>`; }
-            windowEl.innerHTML = `<div class="window-header"><div class="window-controls"><span class="window-control close"></span></div><div class="window-title">${options.name || app.name}</div></div><div class="window-content">${contentHTML}</div>`;
-            desktop.appendChild(windowEl); makeDraggable(windowEl, windowEl.querySelector('.window-header'));
-            windowEl.querySelector('.close').addEventListener('click', () => windowEl.remove());
-            windowEl.addEventListener('mousedown', () => bringToFront(windowEl));
-            if (app.type === 'filesystem') {
-                renderFileSystem(windowEl, 'root');
-                const fsContent = windowEl.querySelector('.file-explorer-content');
-                
-                fsContent.addEventListener('contextmenu', e => {
-                    e.preventDefault(); e.stopPropagation();
-                    currentAppContext = { window: windowEl, folderId: windowEl.dataset.currentFolder };
-                    const currentFolder = fileSystem[currentAppContext.folderId];
-                    const fsContextMenu = document.getElementById('fs-context-menu');
-                    document.getElementById('fs-new-subject').style.display = currentFolder.type === 'root' ? 'flex' : 'none';
-                    document.getElementById('fs-new-chapter').style.display = currentFolder.type === 'subject' ? 'flex' : 'none';
-                    fsContextMenu.style.top = `${e.clientY}px`; fsContextMenu.style.left = `${e.clientX}px`;
-                    fsContextMenu.style.display = 'block';
-                });
-                
-                let pressTimer;
-                fsContent.addEventListener('touchstart', e => {
-                    pressTimer = window.setTimeout(() => {
-                        e.preventDefault(); e.stopPropagation();
-                        currentAppContext = { window: windowEl, folderId: windowEl.dataset.currentFolder };
-                        const currentFolder = fileSystem[currentAppContext.folderId];
-                        const fsContextMenu = document.getElementById('fs-context-menu');
-                        document.getElementById('fs-new-subject').style.display = currentFolder.type === 'root' ? 'flex' : 'none';
-                        document.getElementById('fs-new-chapter').style.display = currentFolder.type === 'subject' ? 'flex' : 'none';
-                        const touch = e.touches[0];
-                        fsContextMenu.style.top = `${touch.clientY}px`; fsContextMenu.style.left = `${touch.clientX}px`;
-                        fsContextMenu.style.display = 'block';
-                    }, 500);
-                });
-                fsContent.addEventListener('touchend', () => clearTimeout(pressTimer));
-                fsContent.addEventListener('touchmove', () => clearTimeout(pressTimer));
+        function createWindow(app) {
+            highestZ++;
+            const windowEl = document.createElement('div');
+            windowEl.className = 'window';
+            windowEl.id = `window-${app.id}`;
+            windowEl.dataset.appId = app.id;
+            windowEl.style.width = '70vw';
+            windowEl.style.height = '80vh';
+            windowEl.style.top = `${5 + (document.querySelectorAll('.window').length * 2)}%`;
+            windowEl.style.left = `${10 + (document.querySelectorAll('.window').length * 2)}%`;
+            windowEl.style.zIndex = highestZ;
+
+            let contentHTML = '';
+            if (app.type === 'iframe') {
+                contentHTML = `<iframe src="${app.iframeSrc}"></iframe>`;
+            } else if (app.type === 'filesystem') {
+                contentHTML = `<div class="file-explorer-header"><span class="back-button"><i class="fas fa-arrow-left"></i></span><div class="breadcrumbs"></div></div><div class="file-explorer-content"></div>`;
             }
+
+            windowEl.innerHTML = `
+                <div class="window-header">
+                    <div class="window-controls">
+                        <span class="window-control close"></span>
+                        <span class="window-control minimize"></span>
+                        <span class="window-control maximize"></span>
+                    </div>
+                    <div class="window-title">${app.name}</div>
+                </div>
+                <div class="window-content">${contentHTML}</div>`;
+            
+            desktop.appendChild(windowEl);
+
+            const newWindow = {
+                id: app.id,
+                element: windowEl,
+                isMinimized: false,
+                isMaximized: false,
+                previousState: {}
+            };
+            openWindows.push(newWindow);
+
+            makeDraggable(windowEl, windowEl.querySelector('.window-header'));
+            windowEl.addEventListener('mousedown', () => bringToFront(windowEl));
+            windowEl.querySelector('.close').addEventListener('click', () => closeWindow(app.id));
+            windowEl.querySelector('.minimize').addEventListener('click', () => minimizeWindow(app.id));
+            windowEl.querySelector('.maximize').addEventListener('click', () => toggleMaximizeWindow(app.id));
+
+            if (app.type === 'filesystem') {
+                setupFileSystem(windowEl);
+            }
+
+            bringToFront(windowEl);
             return windowEl;
         }
 
-        function renderFileSystem(windowEl, folderId) {
+        function closeWindow(appId) {
+            const windowIndex = openWindows.findIndex(w => w.id === appId);
+            if (windowIndex > -1) {
+                openWindows[windowIndex].element.remove();
+                openWindows.splice(windowIndex, 1);
+                updateTaskbar();
+            }
+        }
+
+        function minimizeWindow(appId) {
+            const openWindow = getOpenWindowById(appId);
+            if (openWindow) {
+                openWindow.element.style.display = 'none';
+                openWindow.isMinimized = true;
+                updateTaskbar();
+            }
+        }
+
+        function toggleMaximizeWindow(appId) {
+            const openWindow = getOpenWindowById(appId);
+            if (!openWindow) return;
+            
+            if (openWindow.isMaximized) {
+                openWindow.element.style.width = openWindow.previousState.width;
+                openWindow.element.style.height = openWindow.previousState.height;
+                openWindow.element.style.top = openWindow.previousState.top;
+                openWindow.element.style.left = openWindow.previousState.left;
+                openWindow.element.classList.remove('maximized');
+                openWindow.isMaximized = false;
+            } else {
+                openWindow.previousState = {
+                    width: openWindow.element.style.width,
+                    height: openWindow.element.style.height,
+                    top: openWindow.element.style.top,
+                    left: openWindow.element.style.left,
+                };
+                openWindow.element.classList.add('maximized');
+                openWindow.isMaximized = true;
+            }
+        }
+
+        function bringToFront(windowEl) {
+            highestZ++;
+            windowEl.style.zIndex = highestZ;
+            updateTaskbar();
+        }
+
+        // --- TASKBAR ---
+
+        function updateTaskbar() {
+            const appsOnTaskbar = [...new Set([...pinnedApps, ...openWindows.map(w => w.id)])];
+            taskbarList.innerHTML = '';
+            
+            appsOnTaskbar.forEach(appId => {
+                const app = getAppById(appId);
+                if (!app) return;
+
+                const item = document.createElement('li');
+                item.className = 'taskbar-item';
+                item.dataset.appId = app.id;
+                
+                const openWindow = getOpenWindowById(app.id);
+                if (openWindow) {
+                    item.classList.add('is-open');
+                    if (parseInt(openWindow.element.style.zIndex) === highestZ && !openWindow.isMinimized) {
+                        item.classList.add('is-active');
+                    }
+                }
+                
+                item.innerHTML = `
+                    <a href="#" class="taskbar-item__link">
+                        <img src="${app.icon}" alt="${app.name}" class="image">
+                    </a>
+                    <div class="indicator"></div>`;
+                
+                item.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    openApp(app.id);
+                });
+
+                item.addEventListener('contextmenu', (event) => {
+                    event.preventDefault();
+                    activeTaskbarApp = app;
+                    showTaskbarContextMenu(event);
+                });
+
+                taskbarList.appendChild(item);
+            });
+            initializeTaskbarAnimations();
+        }
+
+        function pinApp(appId) {
+            if (!isAppPinned(appId)) {
+                pinnedApps.push(appId);
+                updateTaskbar();
+            }
+        }
+
+        function unpinApp(appId) {
+            const index = pinnedApps.indexOf(appId);
+            if (index > -1) {
+                pinnedApps.splice(index, 1);
+                const openWindow = getOpenWindowById(appId);
+                if (!openWindow) {
+                    updateTaskbar();
+                }
+            }
+        }
+        
+        // --- CONTEXT MENUS ---
+
+        function showTaskbarContextMenu(event) {
+            const menu = document.getElementById('taskbar-context-menu');
+            const appIsOpen = !!getOpenWindowById(activeTaskbarApp.id);
+            const appIsPinned = isAppPinned(activeTaskbarApp.id);
+
+            document.getElementById('taskbar-ctx-open').style.display = appIsOpen ? 'none' : 'flex';
+            document.getElementById('taskbar-ctx-close').style.display = appIsOpen ? 'flex' : 'none';
+            document.getElementById('taskbar-ctx-pin').style.display = appIsPinned ? 'none' : 'flex';
+            document.getElementById('taskbar-ctx-unpin').style.display = appIsPinned ? 'flex' : 'none';
+
+            hideAllContextMenus();
+            menu.style.display = 'block';
+            menu.style.left = `${event.clientX}px`;
+            menu.style.top = `${event.clientY - menu.offsetHeight - 10}px`;
+        }
+        
+        function hideAllContextMenus() {
+            document.querySelectorAll('.context-menu').forEach(menu => menu.style.display = 'none');
+        }
+
+        // --- INITIALIZATION & UI SETUP ---
+
+        function renderDesktop() {
+            desktop.innerHTML = '';
+            startMenuList.innerHTML = '';
+            APPS.forEach((app, index) => {
+                const icon = document.createElement('div');
+                icon.className = 'desktop-icon';
+                icon.dataset.appId = app.id;
+                icon.style.left = `${GRID_OFFSET + (index % 4) * GRID_SIZE}px`;
+                icon.style.top = `${GRID_OFFSET + Math.floor(index / 4) * GRID_SIZE}px`;
+                icon.innerHTML = `<img src="${app.icon}" alt="${app.name}" class="icon-image"><span class="icon-label">${app.name}</span>`;
+                desktop.appendChild(icon);
+                
+                if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+                    makeDraggable(icon, icon);
+                }
+
+                const startItem = document.createElement('li');
+                startItem.className = 'start-menu-item';
+                startItem.dataset.appId = app.id;
+                startItem.innerHTML = `<img src="${app.icon}" alt="${app.name}"><span>${app.name}</span>`;
+                startMenuList.appendChild(startItem);
+            });
+            attachDesktopIconListeners();
+        }
+
+        function makeDraggable(element, handle) {
+            let isDragging = false;
+            let startX, startY, initialX, initialY;
+            
+            const dragStart = (e) => {
+                if (element.classList.contains('window') && element.classList.contains('maximized')) return;
+                const event = e.touches ? e.touches[0] : e;
+                if (event.button !== 0 && e.type === 'mousedown') return;
+                
+                isDragging = true;
+                element.style.transition = 'none';
+                startX = event.clientX;
+                startY = event.clientY;
+                initialX = element.offsetLeft;
+                initialY = element.offsetTop;
+                
+                document.addEventListener('mousemove', dragMove);
+                document.addEventListener('mouseup', dragEnd);
+                document.addEventListener('touchmove', dragMove, { passive: false });
+                document.addEventListener('touchend', dragEnd);
+            };
+
+            const dragMove = (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const event = e.touches ? e.touches[0] : e;
+                const dx = event.clientX - startX;
+                const dy = event.clientY - startY;
+                element.style.left = `${initialX + dx}px`;
+                element.style.top = `${initialY + dy}px`;
+            };
+
+            const dragEnd = () => {
+                if (!isDragging) return;
+                isDragging = false;
+
+                if (element.classList.contains('desktop-icon')) {
+                    const finalLeft = Math.round((element.offsetLeft - GRID_OFFSET) / GRID_SIZE) * GRID_SIZE + GRID_OFFSET;
+                    const finalTop = Math.round((element.offsetTop - GRID_OFFSET) / GRID_SIZE) * GRID_SIZE + GRID_OFFSET;
+                    element.style.transition = 'top 0.2s ease-out, left 0.2s ease-out';
+                    element.style.left = `${finalLeft}px`;
+                    element.style.top = `${finalTop}px`;
+                } else {
+                    element.style.transition = '';
+                }
+
+                document.removeEventListener('mousemove', dragMove);
+                document.removeEventListener('mouseup', dragEnd);
+                document.removeEventListener('touchmove', dragMove);
+                document.removeEventListener('touchend', dragEnd);
+            };
+
+            handle.addEventListener('mousedown', dragStart);
+            handle.addEventListener('touchstart', dragStart);
+        }
+
+        // --- EVENT LISTENERS & UNCHANGED FUNCTIONS ---
+
+        function attachDesktopIconListeners() {
+            document.querySelectorAll('.desktop-icon').forEach(icon => {
+                let pressTimer, longPressTriggered = false;
+
+                icon.addEventListener('contextmenu', e => {
+                    e.preventDefault();
+                    activeIcon = icon;
+                    const contextMenu = document.getElementById('desktop-context-menu');
+                    hideAllContextMenus();
+                    contextMenu.style.display = 'block';
+                    contextMenu.style.top = `${e.clientY}px`;
+                    contextMenu.style.left = `${e.clientX}px`;
+                });
+
+                icon.addEventListener('touchstart', e => {
+                    longPressTriggered = false;
+                    pressTimer = window.setTimeout(() => {
+                        e.preventDefault();
+                        longPressTriggered = true;
+                        activeIcon = icon;
+                        const contextMenu = document.getElementById('desktop-context-menu');
+                        const touch = e.touches[0];
+                        hideAllContextMenus();
+                        contextMenu.style.display = 'block';
+                        contextMenu.style.top = `${touch.clientY}px`;
+                        contextMenu.style.left = `${touch.clientX}px`;
+                    }, 500);
+                });
+
+                icon.addEventListener('touchend', () => clearTimeout(pressTimer));
+                icon.addEventListener('touchmove', () => clearTimeout(pressTimer));
+
+                const action = () => openApp(icon.dataset.appId);
+                if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                    icon.addEventListener('click', (e) => {
+                        if (longPressTriggered) { e.preventDefault(); return; }
+                        action();
+                    });
+                } else {
+                    icon.addEventListener('dblclick', action);
+                }
+            });
+
+            document.querySelectorAll('.start-menu-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    openApp(item.dataset.appId);
+                    document.getElementById('start-menu').classList.remove('visible');
+                });
+            });
+        }
+        
+        function setupGlobalListeners() {
+            window.addEventListener('click', e => {
+                if (!e.target.closest('.context-menu')) { hideAllContextMenus(); }
+                
+                const startMenu = document.getElementById('start-menu');
+                const startButton = document.getElementById('start-button');
+                if (startMenu.classList.contains('visible') && !startMenu.contains(e.target) && !startButton.contains(e.target)) {
+                    startMenu.classList.remove('visible');
+                }
+            });
+
+            document.getElementById('start-button').addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.getElementById('start-menu').classList.toggle('visible');
+            });
+            
+            document.getElementById('ctx-open').addEventListener('click', () => { if (activeIcon) openApp(activeIcon.dataset.appId); });
+            document.getElementById('ctx-pin').addEventListener('click', () => { if (activeIcon) pinApp(activeIcon.dataset.appId); });
+            document.getElementById('taskbar-ctx-open').addEventListener('click', () => { if (activeTaskbarApp) openApp(activeTaskbarApp.id); });
+            document.getElementById('taskbar-ctx-close').addEventListener('click', () => { if (activeTaskbarApp) closeWindow(activeTaskbarApp.id); });
+            document.getElementById('taskbar-ctx-pin').addEventListener('click', () => { if (activeTaskbarApp) pinApp(activeTaskbarApp.id); });
+            document.getElementById('taskbar-ctx-unpin').addEventListener('click', () => { if (activeTaskbarApp) unpinApp(activeTaskbarApp.id); });
+            document.getElementById('fs-new-subject').addEventListener('click', () => createNewSubject(currentAppContext.folderId));
+            document.getElementById('fs-new-chapter').addEventListener('click', () => createNewChapter(currentAppContext.folderId));
+        }
+        
+        // --- INITIAL EXECUTION ---
+        function init() {
+            renderDesktop();
+            setupGlobalListeners();
+            APPS.slice(0, 12).forEach(app => pinnedApps.push(app.id));
+            updateTaskbar();
+            setInterval(() => document.getElementById('tray-clock').textContent = new Date().toLocaleTimeString('fr-FR'), 1000);
+            document.getElementById('tray-date').textContent = new Date().toLocaleDateString('fr-FR');
+        }
+
+        // Helper functions that are not modified are defined here to keep the code clean
+        function setupFileSystem(windowEl) {
+            renderFileSystem(windowEl, 'root');
+            const fsContent = windowEl.querySelector('.file-explorer-content');
+            fsContent.addEventListener('contextmenu', e => {
+                e.preventDefault(); e.stopPropagation();
+                currentAppContext = { window: windowEl, folderId: windowEl.dataset.currentFolder };
+                const currentFolder = fileSystem[currentAppContext.folderId];
+                const fsContextMenu = document.getElementById('fs-context-menu');
+                document.getElementById('fs-new-subject').style.display = currentFolder.type === 'root' ? 'flex' : 'none';
+                document.getElementById('fs-new-chapter').style.display = currentFolder.type === 'subject' ? 'flex' : 'none';
+                hideAllContextMenus();
+                fsContextMenu.style.display = 'block';
+                fsContextMenu.style.top = `${e.clientY}px`;
+                fsContextMenu.style.left = `${e.clientX}px`;
+            });
+        }
+        function renderFileSystem(windowEl, folderId) { /* Unchanged */
             windowEl.dataset.currentFolder = folderId; const folder = fileSystem[folderId];
             const contentEl = windowEl.querySelector('.file-explorer-content');
             const breadcrumbsEl = windowEl.querySelector('.breadcrumbs');
@@ -328,9 +635,7 @@
             breadcrumbsEl.querySelectorAll('.breadcrumb-item').forEach(b => b.addEventListener('click', () => renderFileSystem(windowEl, b.dataset.id)));
             backButton.style.visibility = folder.parent ? 'visible' : 'hidden';
             backButton.onclick = () => renderFileSystem(windowEl, folder.parent);
-
             const itemsToRender = folder.type === 'subject' ? folder.children : folder.children.map(id => fileSystem[id]);
-            
             itemsToRender.forEach(item => {
                 if (item.type === 'subject' || item.type === 'root') {
                     const itemEl = document.createElement('div'); itemEl.className = 'fs-item';
@@ -356,16 +661,14 @@
                 }
             });
         }
-        
-        function createNewSubject(parentFolderId) {
+        function createNewSubject(parentFolderId) { /* Unchanged */
             const name = prompt("Nom de la nouvelle matière :"); if (!name) return;
             const id = `subject-${Date.now()}`;
             fileSystem[id] = { id, name, type: 'subject', parent: parentFolderId, children: [] };
             fileSystem[parentFolderId].children.push(id);
             renderFileSystem(currentAppContext.window, parentFolderId);
         }
-
-        function createNewChapter(parentFolderId) {
+        function createNewChapter(parentFolderId) { /* Unchanged */
             const name = prompt("Nom du nouveau chapitre :"); if (!name) return;
             const notebookLM_iconUrl = prompt("URL de l'image pour l'icône NotebookLM :", "https://res.cloudinary.com/dzmyybvbu/image/upload/b_rgb:FFFFFF/v1759263534/notebooklm_logo-freelogovectors.net__nnswzy.png"); if (!notebookLM_iconUrl) return;
             const notebookLM_targetUrl = prompt("URL cible pour NotebookLM :", "https://notebooklm.google.com/"); if (!notebookLM_targetUrl) return;
@@ -374,103 +677,13 @@
             fileSystem[parentFolderId].children.push({ id, name, type: 'chapter', notebookLM_iconUrl, notebookLM_targetUrl, cour_targetUrl });
             renderFileSystem(currentAppContext.window, parentFolderId);
         }
-
-        function bringToFront(windowEl) { highestZ++; windowEl.style.zIndex = highestZ; }
-        function setDate() { const now = new Date(); document.getElementById('tray-clock').textContent = now.toLocaleTimeString('fr-FR'); document.getElementById('tray-date').textContent = now.toLocaleDateString('fr-FR'); }
-        setInterval(setDate, 1000); setDate();
-
-        function openApp(appId, options = {}) {
-            const app = appId ? APPS.find(a => a.id === appId) : {}; const finalApp = { ...app, ...options };
-            if (finalApp.type === 'link') { window.open(finalApp.href, '_blank'); }
-            else { const windowId = `window-${options.id || appId}`; const existingWindow = document.getElementById(windowId); if (existingWindow) bringToFront(existingWindow); else createWindow(finalApp, options); }
-        }
-        
-        function attachIconListeners() {
-            document.querySelectorAll('.desktop-icon').forEach(icon => {
-                let pressTimer;
-                let longPressTriggered = false;
-
-                // Pour la souris : Clic droit
-                icon.addEventListener('contextmenu', e => {
-                    e.preventDefault();
-                    activeIcon = icon;
-                    const contextMenu = document.getElementById('desktop-context-menu');
-                    contextMenu.style.top = `${e.clientY}px`;
-                    contextMenu.style.left = `${e.clientX}px`;
-                    contextMenu.style.display = 'block';
-                });
-
-                // Pour le tactile : Appui long
-                icon.addEventListener('touchstart', e => {
-                    longPressTriggered = false;
-                    pressTimer = window.setTimeout(() => {
-                        e.preventDefault();
-                        longPressTriggered = true;
-                        activeIcon = icon;
-                        const contextMenu = document.getElementById('desktop-context-menu');
-                        const touch = e.touches[0];
-                        contextMenu.style.top = `${touch.clientY}px`;
-                        contextMenu.style.left = `${touch.clientX}px`;
-                        contextMenu.style.display = 'block';
-                    }, 500);
-                });
-
-                icon.addEventListener('touchend', () => clearTimeout(pressTimer));
-                icon.addEventListener('touchmove', () => clearTimeout(pressTimer));
-
-                // Pour la souris : Clic simple / Pour le tactile : Tap
-                icon.addEventListener('click', (e) => {
-                    if (longPressTriggered) {
-                        e.preventDefault();
-                        return;
-                    }
-                    openApp(icon.dataset.appId);
-                });
-            });
-
-            document.querySelectorAll('.start-menu-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    openApp(item.dataset.appId);
-                    document.getElementById('start-menu').classList.remove('visible');
-                });
-            });
-        }
-        
-        window.addEventListener('click', e => {
-            document.getElementById('desktop-context-menu').style.display = 'none'; document.getElementById('fs-context-menu').style.display = 'none';
-            const startMenu = document.getElementById('start-menu'); const startButton = document.getElementById('start-button');
-            if (startMenu.classList.contains('visible') && !startMenu.contains(e.target) && !startButton.contains(e.target)) { startMenu.classList.remove('visible'); }
-        });
-        
-        document.getElementById('start-button').addEventListener('click', () => document.getElementById('start-menu').classList.toggle('visible'));
-        document.getElementById('open-app').addEventListener('click', () => { if (activeIcon) openApp(activeIcon.dataset.appId); });
-        document.getElementById('pin-to-taskbar').addEventListener('click', () => {
-            if (!activeIcon) return; const app = APPS.find(a => a.id === activeIcon.dataset.appId); if (!app || document.querySelector(`.taskbar-item[data-app-id="${app.id}"]`)) return;
-            const newPin = document.createElement('li'); newPin.className = 'taskbar-item'; newPin.dataset.appId = app.id;
-            newPin.innerHTML = `<a href="#" class="taskbar-item__link"><img src="${app.icon}" alt="${app.name}" class="image"></a>`;
-            document.querySelector('.taskbar-center .taskbar-list').appendChild(newPin); newPin.addEventListener('click', e => { e.preventDefault(); openApp(app.id); });
-        });
-        document.getElementById('fs-new-subject').addEventListener('click', () => createNewSubject(currentAppContext.folderId));
-        document.getElementById('fs-new-chapter').addEventListener('click', () => createNewChapter(currentAppContext.folderId));
-
-        function makeDraggable(element, handle) {
-            let isDragging = false; let startX, startY, initialX, initialY;
-            const dragStart = (e) => { const event = e.touches ? e.touches[0] : e; if (event.button !== 0 && e.type === 'mousedown') return; e.preventDefault(); isDragging = true; element.style.transition = 'none'; startX = event.clientX; startY = event.clientY; initialX = element.offsetLeft; initialY = element.offsetTop; document.addEventListener('mousemove', dragMove); document.addEventListener('mouseup', dragEnd); document.addEventListener('touchmove', dragMove, { passive: false }); document.addEventListener('touchend', dragEnd); };
-            const dragMove = (e) => { if (!isDragging) return; const event = e.touches ? e.touches[0] : e; const dx = event.clientX - startX; const dy = event.clientY - startY; element.style.left = `${initialX + dx}px`; element.style.top = `${initialY + dy}px`; };
-            const dragEnd = () => { if (!isDragging) return; isDragging = false; if (element.classList.contains('desktop-icon')) { const finalLeft = Math.round(element.offsetLeft / GRID_SIZE) * GRID_SIZE + (GRID_SIZE / 4); const finalTop = Math.round(element.offsetTop / GRID_SIZE) * GRID_SIZE + (GRID_SIZE / 4); element.style.transition = 'top 0.2s ease-out, left 0.2s ease-out'; element.style.left = `${finalLeft}px`; element.style.top = `${finalTop}px`; } document.removeEventListener('mousemove', dragMove); document.removeEventListener('mouseup', dragEnd); document.removeEventListener('touchmove', dragMove); document.removeEventListener('touchend', dragEnd); };
-            handle.addEventListener('mousedown', dragStart); handle.addEventListener('touchstart', dragStart);
-        }
-
-        function initializeTaskbarAnimations() {
+        function initializeTaskbarAnimations() { /* Unchanged */
             const items = Array.from(document.querySelectorAll('.taskbar-item'));
             const toggle = (index, offset, className, add) => { const sibling = items[index + offset]; if (sibling) sibling.classList.toggle(className, add); };
             items.forEach((item, index) => { item.addEventListener('mouseenter', () => { item.classList.add('hover'); toggle(index, -1, 'sibling-close', true); toggle(index, 1, 'sibling-close', true); toggle(index, -2, 'sibling-far', true); toggle(index, 2, 'sibling-far', true); }); item.addEventListener('mouseleave', () => { item.classList.remove('hover'); toggle(index, -1, 'sibling-close', false); toggle(index, 1, 'sibling-close', false); toggle(index, -2, 'sibling-far', false); toggle(index, 2, 'sibling-far', false); }); });
         }
-        let taskbarObserver = new MutationObserver(() => initializeTaskbarAnimations());
-        taskbarObserver.observe(document.querySelector('.taskbar-list'), { childList: true });
         
-        renderDesktop();
-        initializeTaskbarAnimations();
+        init();
     });
     </script>
 </body>
