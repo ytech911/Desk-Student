@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Papy Gaming - Accédez au Noyau. Une puissance de calcul sans précédent pour une domination totale.">
+
+    <title>Papy Gaming | Project Chimera</title>
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756846419/image-50_tls8m3.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<style>
+/* =================================================================
+   1. SYSTÈME DE DESIGN "CHIMERA CORE"
+   ================================================================= */
+:root {
+    --c-bg: #03040B;
+    --c-bg-glass: rgba(10, 14, 30, 0.5);
+    --c-text-primary: #FFFFFF;
+    --c-text-secondary: #9098B6;
+    --c-accent-purple: #9E42F5;
+    --c-accent-cyan: #00D2FF;
+    --c-border: rgba(0, 210, 255, 0.25);
+    --c-glow: rgba(0, 210, 255, 0.8);
+    
+    --font-primary: 'Poppins', sans-serif;
+    --header-height: 85px;
+    --clip-path-chamfer: polygon(30px 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%, 0 30px);
+    --transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--c-bg);
+    color: var(--c-text-primary);
+    overflow-x: hidden;
+}
+
+/* --- Arrière-plan 3D & Particules --- */
+#particles-js {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%; z-index: -2;
+}
+
+.container { width: 90%; max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; }
+
+/* =================================================================
+   2. ANIMATIONS & COMPOSANTS GLOBAUX
+   ================================================================= */
+.reveal-container {
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+.reveal-container.is-visible { opacity: 1; }
+
+.section-header { text-align: center; margin-bottom: 5rem; }
+.section-header h2 { font-size: 3.2rem; font-weight: 700; margin-bottom: 1rem; animation: text-glitch 3s infinite; }
+.section-header .subtitle { font-size: 1.2rem; color: var(--c-text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7; }
+
+/* --- Boutons Énergétiques --- */
+.btn {
+    display: inline-block; text-decoration: none; font-weight: 600;
+    padding: 16px 36px; border: 1px solid var(--c-border); color: var(--c-text-primary);
+    position: relative; overflow: hidden; transition: color 0.4s ease-out;
+    clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+}
+.btn::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%; z-index: -1;
+    background: var(--c-accent-cyan);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.7, 0, 0.2, 1);
+}
+.btn:hover { color: var(--c-bg); }
+.btn:hover::before { transform: scaleX(1); }
+
+/* --- Conteneur Tech avec animation de bordure --- */
+.tech-container {
+    background: var(--c-bg-glass);
+    border: 1px solid var(--c-border);
+    backdrop-filter: blur(20px);
+    clip-path: var(--clip-path-chamfer);
+    padding: 4rem;
+    position: relative;
+}
+/* Animation "Boot Sequence" des bordures */
+.tech-container .border-glow {
+    position: absolute; width: 100%; height: 100%;
+    top: 0; left: 0; pointer-events: none;
+    clip-path: var(--clip-path-chamfer);
+}
+.border-glow span {
+    position: absolute; background: var(--c-accent-cyan);
+    box-shadow: 0 0 15px var(--c-glow);
+    transition: transform 0.8s ease-out;
+}
+.border-glow .top, .border-glow .bottom { height: 2px; transform: scaleX(0); }
+.border-glow .left, .border-glow .right { width: 2px; transform: scaleY(0); }
+.top { top: 0; left: 0; transform-origin: left; }
+.bottom { bottom: 0; right: 0; transform-origin: right; }
+.left { top: 0; left: 0; transform-origin: bottom; }
+.right { bottom: 0; right: 0; transform-origin: top; }
+
+.is-visible .tech-container .border-glow span {
+    transform: scaleX(1) scaleY(1);
+}
+.is-visible .tech-container .border-glow .top { transition-delay: 0s; }
+.is-visible .tech-container .border-glow .right { transition-delay: 0.2s; }
+.is-visible .tech-container .border-glow .bottom { transition-delay: 0.4s; }
+.is-visible .tech-container .border-glow .left { transition-delay: 0.6s; }
+
+/* =================================================================
+   3. HEADER
+   ================================================================= */
+header {
+    background: rgba(3, 4, 11, 0.7);
+    backdrop-filter: blur(15px);
+    position: fixed; top: 0; left: 0; width: 100%;
+    height: var(--header-height);
+    border-bottom: 1px solid var(--c-border); z-index: 1000;
+}
+.header-container { display: flex; justify-content: space-between; align-items: center; height: 100%; }
+.header-branding img { width: 45px; }
+.header-branding h1 { font-size: 1.6rem; font-weight: 700; }
+.header-nav ul { list-style: none; display: flex; align-items: center; gap: 3rem; }
+.header-nav a { text-decoration: none; color: var(--c-text-secondary); font-weight: 500; transition: var(--transition); }
+.header-nav a:hover { color: var(--c-accent-cyan); text-shadow: 0 0 10px var(--c-glow); }
+
+
+/* =================================================================
+   4. SECTIONS SPÉCIFIQUES
+   ================================================================= */
+main { padding-top: var(--header-height); }
+section { padding: 8rem 0; }
+
+/* --- Section Héros --- */
+.hero-section {
+    min-height: calc(100vh - var(--header-height));
+    display: flex; flex-direction: column; justify-content: center;
+    text-align: center;
+    position: relative;
+}
+.hero-video-bg { position: absolute; top:0; left:0; width: 100%; height: 100%; z-index: -1; object-fit: cover; opacity: 0.3; }
+
+.hero-section h1 {
+    font-size: 5rem; font-weight: 800; line-height: 1.1;
+    letter-spacing: -3px; margin-bottom: 1.5rem;
+    animation: text-glitch 4s infinite alternate;
+}
+.hero-section h1 .accent-text {
+    background: linear-gradient(90deg, var(--c-accent-purple), var(--c-accent-cyan));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.hero-section p { font-size: 1.3rem; max-width: 800px; margin: 0 auto 3rem auto; color: var(--c-text-secondary); }
+
+/* --- Section Offres 3D --- */
+.offers-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem;
+    perspective: 2000px;
+}
+.offer-card {
+    background: var(--c-bg-glass); border: 1px solid var(--c-border);
+    clip-path: var(--clip-path-chamfer); padding: 2.5rem;
+    text-align: center;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s, box-shadow 0.5s;
+}
+.offer-card:hover {
+    box-shadow: 0 0 50px var(--c-glow);
+}
+.offer-card .card-content {
+    transform: translateZ(20px); /* Pousse le contenu vers l'avant */
+}
+.offer-card h3 { font-size: 1.8rem; margin-bottom: 2rem; color: var(--c-accent-cyan); }
+.offer-card ul { list-style: none; text-align: left; margin-bottom: 2.5rem; font-size: 1.1rem; }
+.offer-card ul li { margin-bottom: 1rem; color: var(--c-text-secondary); }
+.offer-card .price { font-size: 3rem; font-weight: 700; margin-bottom: 2rem; }
+.offer-card .price span { font-size: 1rem; color: var(--c-text-secondary); }
+
+/* --- Section Features --- */
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; text-align: center; }
+.feature-item .icon { font-size: 3.5rem; color: var(--c-accent-cyan); text-shadow: 0 0 15px var(--c-glow); margin-bottom: 1.5rem; }
+.feature-item h3 { font-size: 1.4rem; margin-bottom: 1rem; }
+.feature-item p { color: var(--c-text-secondary); line-height: 1.7; }
+
+/* =================================================================
+   5. ANIMATIONS & FOOTER
+   ================================================================= */
+@keyframes text-glitch {
+  2%, 64% { transform: translate(2px, 0) skew(0deg); }
+  4%, 60% { transform: translate(-2px, 0) skew(0deg); }
+  62% { transform: translate(0, 0) skew(5deg); }
+}
+
+footer {
+    padding: 5rem 0 2rem; margin-top: 5rem;
+    border-top: 1px solid var(--c-border);
+    background-color: #03040B; /* Assure que le footer cache les particules */
+    position: relative; z-index: 5;
+}
+.footer-container { text-align: center; }
+.footer-container .footer-nav { margin-bottom: 2rem; display: flex; justify-content: center; gap: 2rem; }
+.footer-container a { color: var(--c-text-secondary); text-decoration: none; transition: var(--transition); }
+.footer-container a:hover { color: var(--c-accent-cyan); }
+.footer-copyright { color: var(--c-text-secondary); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+    
+    <div id="particles-js"></div>
+
+    <header>
+        <div class="container header-container">
+            <div class="header-branding">
+                <img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756846419/image-50_tls8m3.png" alt="Logo Papy Gaming">
+                <h1>Papy Gaming</h1>
+            </div>
+            <nav class="header-nav">
+                <ul>
+                    <li><a href="#" class="active">Noyau</a></li>
+                    <li><a href="#">Protocoles</a></li>
+                    <li><a href="#">Armature</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Section Héros Cinématique -->
+        <section class="hero-section container">
+            <!-- Remplacez par une vidéo de fond abstraite et tech -->
+            <video class="hero-video-bg" autoplay muted loop playsinline>
+                <source src="https://res.cloudinary.com/dzmyybvbu/video/upload/v1757267405/Projet_09-07_Full_HD_1080p_HIGH_FR60_ky1ok2.mp4" type="video/mp4">
+            </video>
+            <div class="reveal-container">
+                <h1>LE JEU NE SERA<br> <span class="accent-text">PLUS JAMAIS LE MÊME</span></h1>
+                <p>Oubliez tout ce que vous savez sur l'hébergement. Nous ne louons pas de serveurs. Nous libérons une puissance brute, façonnée pour l'élite. Ceci est votre ascension.</p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn">PROTOCOLE DE DÉPLOIEMENT</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Offres 3D -->
+        <section class="offers-section container">
+            <div class="reveal-container">
+                <div class="tech-container">
+                    <div class="border-glow">
+                        <span class="top"></span><span class="right"></span>
+                        <span class="bottom"></span><span class="left"></span>
+                    </div>
+                    <div class="section-header">
+                        <h2>Protocoles de Puissance</h2>
+                        <p class="subtitle">Votre arsenal. Choisissez le calibre de votre domination. Chaque protocole est une promesse de performance sans concession.</p>
+                    </div>
+                    <div class="offers-grid">
+                        <div class="offer-card"><div class="card-content"><h3>Protocole VANGUARD</h3><ul><li>CPU: 4 Cores @ 5.2GHz</li><li>RAM: 8 GB DDR5 Overclocked</li><li>Stockage: 100 GB NVMe Gen5</li></ul><div class="price">49€<span>/mois</span></div><a href="#" class="btn">Initialiser</a></div></div>
+                        <div class="offer-card"><div class="card-content"><h3>Protocole WRAITH</h3><ul><li>CPU: 6 Cores @ 5.4GHz</li><li>RAM: 16 GB DDR5 Overclocked</li><li>Stockage: 200 GB NVMe Gen5</li></ul><div class="price">89€<span>/mois</span></div><a href="#" class="btn">Initialiser</a></div></div>
+                        <div class="offer-card"><div class="card-content"><h3>Protocole LEVIATHAN</h3><ul><li>CPU: 8 Cores @ 5.6GHz</li><li>RAM: 32 GB DDR5 Overclocked</li><li>Stockage: 400 GB NVMe Gen5</li></ul><div class="price">149€<span>/mois</span></div><a href="#" class="btn">Initialiser</a></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section Features -->
+        <section class="features-section container">
+            <div class="reveal-container">
+                 <div class="section-header">
+                    <h2>Armature Cybernétique</h2>
+                    <p class="subtitle">Chaque composant de notre infrastructure est une arme. Conçue, optimisée et obsédée par un seul objectif : la victoire.</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-item"><div class="icon material-icons">hub</div><h3>Réseau Synaptique</h3><p>Notre réseau neuronal prédictif anticipe les congestions et reroute le trafic avant même que la latence n'apparaisse. Votre connexion est plus rapide que la pensée.</p></div>
+                    <div class="feature-item"><div class="icon material-icons">shield</div><h3>Égide Anti-Entropie</h3><p>Une protection DDoS qui n'est pas un mur, mais un trou noir. Les attaques ne sont pas bloquées, elles sont absorbées et désintégrées.</p></div>
+                    <div class="feature-item"><div class="icon material-icons">bolt</div><h3>Cœur Énergétique</h3><p>Des processeurs deliddés et refroidis par des systèmes propriétaires. Nous extrayons chaque once de performance brute, bien au-delà des spécifications d'usine.</p></div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-nav">
+                <a href="#">Discord</a>
+                <a href="#">Statut du Réseau</a>
+                <a href="#">Base de Connaissances</a>
+            </div>
+            <div class="footer-copyright">&copy; 2025 Papy Gaming // Division Chimera. La performance n'est pas une option, c'est une loi.</div>
+        </div>
+    </footer>
+
+    <!-- Bibliothèque pour l'effet de particules -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // --- Configuration des Particules ---
+        particlesJS("particles-js", {
+            "particles": { "number": { "value": 80, "density": { "enable": true, "value_area": 800 } }, "color": { "value": "#00d2ff" }, "shape": { "type": "circle" }, "opacity": { "value": 0.5, "random": true }, "size": { "value": 3, "random": true }, "line_linked": { "enable": true, "distance": 150, "color": "#9098b6", "opacity": 0.2, "width": 1 }, "move": { "enable": true, "speed": 1, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false } },
+            "interactivity": { "detect_on": "canvas", "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": false }, "resize": true }, "modes": { "grab": { "distance": 140, "line_linked": { "opacity": 0.5 } } } },
+            "retina_detect": true
+        });
+
+        // --- Animation au défilement ---
+        const revealContainers = document.querySelectorAll(".reveal-container");
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("is-visible");
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        revealContainers.forEach(container => { observer.observe(container); });
+        
+        // --- Effet 3D sur les cartes d'offres ---
+        const cards = document.querySelectorAll('.offer-card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 20; // Diviseur pour réduire l'intensité
+                const rotateY = (centerX - x) / 20;
+                
+                card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            });
+        });
+    });
+    </script>
+</body>
+</html>
