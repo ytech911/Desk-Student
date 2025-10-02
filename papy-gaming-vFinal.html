@@ -153,7 +153,7 @@ header {
     transform: scale(1.05);
     box-shadow: 0 0 20px var(--c-glow-purple);
 }
-.mobile-menu-button { display: none; cursor: pointer; }
+.mobile-menu-button { display: none; cursor: pointer; background: none; border: none; color: var(--c-text-primary); padding: 0.5rem; }
 .mobile-menu-button .material-icons { font-size: 2rem; }
 
 /* =================================================================
@@ -268,7 +268,7 @@ section { padding: 6rem 0; }
     display: flex;
     gap: 2rem;
     width: max-content;
-    animation: scroll 10s linear infinite;
+    animation: scroll 40s linear infinite;
 }
 
 .reviews-carousel-container:hover .reviews-grid-scroller,
@@ -430,7 +430,6 @@ footer {
     .card-grid { grid-template-columns: repeat(2, 1fr); }
     .why-us-grid { grid-template-columns: 1fr; }
     .games-grid { grid-template-columns: repeat(2, 1fr); }
-    /* .reviews-grid { grid-template-columns: 1fr; } */ /* Remplacé par le carrousel */
     .footer-container { grid-template-columns: 1fr 1fr; }
 }
 
@@ -440,19 +439,67 @@ footer {
     section { padding: 4rem 0; }
     .section-glass { padding: 2rem; }
 
+    /* ====================================================== */
+    /* == DÉBUT DES MODIFICATIONS POUR L'ANIMATION DU MENU == */
+    /* ====================================================== */
+
     .header-nav {
-        display: none;
+        /* On retire 'display: none' pour permettre l'animation */
         position: absolute;
         top: var(--header-height);
         left: 0; right: 0;
         background: var(--c-bg);
         border-bottom: 1px solid var(--c-border);
+        height: calc(100vh - var(--header-height));
+
+        /* État initial : caché et prêt pour l'animation */
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-20px);
+        transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+        
+        /* Flexbox pour centrer les liens quand le menu est ouvert */
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-    .header-nav.is-open { display: block; }
-    .header-nav ul { flex-direction: column; padding: 1rem 0; gap: 0; }
+
+    .header-nav.is-open {
+        /* État final : visible */
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    
+    .header-nav ul {
+        flex-direction: column;
+        padding: 1rem 0;
+        gap: 1rem; /* Espacement ajusté */
+    }
     .header-nav li { width: 100%; text-align: center; }
-    .header-nav a { padding: 1rem; display: block; width: 100%; }
-    .mobile-menu-button { display: block; }
+    .header-nav a {
+        padding: 1rem;
+        display: block;
+        width: 100%;
+        font-size: 1.2rem;
+    }
+
+    .mobile-menu-button {
+        display: block;
+        z-index: 1001; /* Pour être sûr qu'il est au-dessus du menu */
+    }
+
+    /* Animation de l'icône hamburger */
+    .mobile-menu-button .material-icons {
+        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .mobile-menu-button.is-active .material-icons {
+        transform: rotate(90deg);
+    }
+    
+    /* ================================================ */
+    /* == FIN DES MODIFICATIONS POUR L'ANIMATION DU MENU == */
+    /* ================================================ */
     
     .hero-content h2 { font-size: 2.2rem; }
     .hero-content p { font-size: 1rem; }
@@ -488,9 +535,9 @@ footer {
                     <li><a href="https://papy-gaming.onrender.com/dashboard.html" class="button-dashboard">DASHBOARD</a></li>
                 </ul>
             </nav>
-            <div class="mobile-menu-button" id="mobile-menu-btn">
+            <button class="mobile-menu-button" id="mobile-menu-btn" aria-label="Ouvrir le menu">
                 <span class="material-icons">menu</span>
-            </div>
+            </button>
         </div>
     </header>
 
@@ -532,7 +579,7 @@ footer {
                         <li>2 Go DDR4 RAM</li>
                         <li>20 Go NVMe SSD</li>
                     </ul>
-                    <button href="https://papy-gaming.onrender.com/starter-offer.html" class="btn btn-primary">Configurer</button>
+                    <a href="https://papy-gaming.onrender.com/starter-offer.html" class="btn btn-primary">Configurer</a>
                 </article>
                 <!-- Offre 2 -->
                 <article class="offer-card scroll-reveal" style="transition-delay: 0.1s;">
@@ -543,7 +590,7 @@ footer {
                         <li>4 Go DDR4 RAM</li>
                         <li>40 Go NVMe SSD</li>
                     </ul>
-                    <button href="https://papy-gaming.onrender.com/pro-offer.html" class="btn btn-primary">Configurer</button>
+                    <a href="https://papy-gaming.onrender.com/pro-offer.html" class="btn btn-primary">Configurer</a>
                 </article>
                 <!-- Offre 3 -->
                 <article class="offer-card scroll-reveal" style="transition-delay: 0.2s;">
@@ -554,7 +601,7 @@ footer {
                         <li>8 Go DDR4 RAM</li>
                         <li>80 Go NVMe SSD</li>
                     </ul>
-                    <button href="https://papy-gaming.onrender.com/elite-offer.html" class="btn btn-primary">Configurer</button>
+                    <a href="https://papy-gaming.onrender.com/elite-offer.html" class="btn btn-primary">Configurer</a>
                 </article>
             </div>
         </section>
@@ -593,13 +640,13 @@ footer {
                 <p>Découvrez notre catalogue de jeux et trouvez l'offre parfaite pour votre prochaine aventure.</p>
             </div>
             <div class="games-grid">
-                <div href="https://papy-gaming.onrender.com/minecraft-offer.html" class="game-card scroll-reveal"><div class="image-wrapper"><img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841407/minecraft_ijqpl5.jpg" alt="Offre Minecraft"></div><a href="https://papy-gaming.onrender.com/minecraft-offer.html">Offre Minecraft</a></div>
-                <div href="https://papy-gaming.onrender.com/ark-offer.html" class="game-card scroll-reveal" style="transition-delay: 0.1s;"><div class="image-wrapper"><img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841419/carousel-bg_i6mvep.jpg" alt="Offre ARK"></div><a href="https://papy-gaming.onrender.com/ark-offer.html">Offre ARK</a></div>
-                <div href="https://papy-gaming.onrender.com/valheim-offer.html" class="game-card scroll-reveal" style="transition-delay: 0.2s;"><div class="image-wrapper"><img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1752229460/Gemini_Generated_Image_5d8jue5d8jue5d8j_lybnue.png" alt="Offre Valheim"></div><a href="https://papy-gaming.onrender.com/valheim-offer.html">Offre Valheim</a></div>
-                <div href="https://papy-gaming.onrender.com/rust-offer.html" class="game-card scroll-reveal" style="transition-delay: 0.3s;"><div class="image-wrapper"><img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841414/ss_4d80aa13703f47589123aeef56b3170ccdb3fe9a.1920x1080_vsiswn.jpg" alt="Offre Rust"></div><a href="https://papy-gaming.onrender.com/rust-offer.html">Offre Rust</a></div>
+                <div class="game-card scroll-reveal"><div class="image-wrapper"><img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841407/minecraft_ijqpl5.jpg" alt="Offre Minecraft"></div><a href="https://papy-gaming.onrender.com/minecraft-offer.html">Offre Minecraft</a></div>
+                <div class="game-card scroll-reveal" style="transition-delay: 0.1s;"><div class="image-wrapper"><img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841419/carousel-bg_i6mvep.jpg" alt="Offre ARK"></div><a href="https://papy-gaming.onrender.com/ark-offer.html">Offre ARK</a></div>
+                <div class="game-card scroll-reveal" style="transition-delay: 0.2s;"><div class="image-wrapper"><img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1752229460/Gemini_Generated_Image_5d8jue5d8jue5d8j_lybnue.png" alt="Offre Valheim"></div><a href="https://papy-gaming.onrender.com/valheim-offer.html">Offre Valheim</a></div>
+                <div class="game-card scroll-reveal" style="transition-delay: 0.3s;"><div class="image-wrapper"><img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841414/ss_4d80aa13703f47589123aeef56b3170ccdb3fe9a.1920x1080_vsiswn.jpg" alt="Offre Rust"></div><a href="https://papy-gaming.onrender.com/rust-offer.html">Offre Rust</a></div>
             </div>
             <div class="view-more-container scroll-reveal">
-                <button onclick="location.href='https://papy-gaming.onrender.com/games.html'" class="btn btn-secondary">Voir tous les jeux</button>
+                <a href="https://papy-gaming.onrender.com/games.html" class="btn btn-secondary">Voir tous les jeux</a>
             </div>
         </section>
         
@@ -746,7 +793,7 @@ footer {
     </footer>
 
     <!-- =================================================================
-       6. JAVASCRIPT
+       7. JAVASCRIPT
        ================================================================= -->
     <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -767,12 +814,26 @@ footer {
         }, observerOptions);
         revealElements.forEach(el => { observer.observe(el); });
 
+
         // --- Menu mobile ---
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const nav = document.getElementById('main-nav');
+        const menuIcon = mobileMenuBtn.querySelector('.material-icons');
+
         mobileMenuBtn.addEventListener('click', () => {
-            nav.classList.toggle('is-open');
+            const isOpen = nav.classList.toggle('is-open');
+            
+            // MODIFICATION JS : Ajout/retrait de la classe pour animer l'icône
+            mobileMenuBtn.classList.toggle('is-active', isOpen);
+            
+            // Change le contenu de l'icône (menu vs. close)
+            if (isOpen) {
+                menuIcon.textContent = 'close';
+            } else {
+                menuIcon.textContent = 'menu';
+            }
         });
+
 
         // --- Carousel des avis ---
         const reviewsCarousel = document.getElementById('reviews-carousel-container');
@@ -780,26 +841,14 @@ footer {
             let pauseTimer = null;
 
             reviewsCarousel.addEventListener('click', () => {
-                // On efface le timer précédent pour réinitialiser le compte à rebours si on clique à nouveau
                 clearTimeout(pauseTimer);
-
-                // On ajoute la classe qui met en pause l'animation via le CSS
                 reviewsCarousel.classList.add('is-paused');
                 
-                // On lance un timer pour retirer la classe et reprendre l'animation après 2 minutes (120000 ms)
                 pauseTimer = setTimeout(() => {
                     reviewsCarousel.classList.remove('is-paused');
                 }, 120000);
             });
         }
-    });
-    document.addEventListener("DOMContentLoaded", () => {
-        // ... (votre code existant pour le scroll et le menu mobile) ...
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const nav = document.getElementById('main-nav');
-        mobileMenuBtn.addEventListener('click', () => {
-            nav.classList.toggle('is-open');
-        });
         
         // --- ACCORDÉON FAQ ---
         const faqItems = document.querySelectorAll('.faq-item');
@@ -809,12 +858,10 @@ footer {
             question.addEventListener('click', () => {
                 const wasOpen = item.classList.contains('is-open');
 
-                // Ferme toutes les autres questions
                 faqItems.forEach(otherItem => {
                     otherItem.classList.remove('is-open');
                 });
 
-                // Si la question cliquée n'était pas déjà ouverte, on l'ouvre
                 if (!wasOpen) {
                     item.classList.add('is-open');
                 }
