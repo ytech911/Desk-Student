@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Papy Gaming - L'hébergement de serveurs de jeu nouvelle génération. Performance, fiabilité et support expert.">
+
+    <title>Papy Gaming | Hébergement Gaming Haute Performance</title>
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756846419/image-50_tls8m3.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<style>
+/* =================================================================
+   1. VARIABLES DE THÈME & RESET GLOBAL
+   ================================================================= */
+:root {
+    --c-bg: #0D0B14;
+    --c-bg-card: rgba(22, 21, 31, 0.5);
+    --c-text-primary: #F0F0F0;
+    --c-text-secondary: #a09db8;
+    --c-border: rgba(255, 255, 255, 0.1);
+    --c-accent-purple: #9E42F5;
+    --c-accent-cyan: #00C2CB;
+    --c-glow-purple: rgba(158, 66, 245, 0.4);
+    --c-glow-cyan: rgba(0, 194, 203, 0.4);
+    
+    --gradient-primary: linear-gradient(90deg, var(--c-accent-purple), var(--c-accent-cyan));
+    --gradient-border: linear-gradient(135deg, var(--c-accent-purple), var(--c-accent-cyan));
+
+    --font-primary: 'Poppins', sans-serif;
+    --header-height: 70px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--c-bg);
+    color: var(--c-text-primary);
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* --- EFFET D'ARRIÈRE-PLAN NÉON ANIMÉ --- */
+body::before, body::after {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 60vw;
+    height: 60vw;
+    max-width: 800px;
+    max-height: 800px;
+    border-radius: 50%;
+    z-index: -1;
+    opacity: 0.15;
+    filter: blur(120px);
+    will-change: transform;
+}
+body::before {
+    background: radial-gradient(circle, var(--c-accent-purple), transparent 60%);
+    animation: pulse-purple 20s infinite alternate cubic-bezier(0.5, 0, 0.5, 1);
+}
+body::after {
+    background: radial-gradient(circle, var(--c-accent-cyan), transparent 60%);
+    animation: pulse-cyan 25s infinite alternate cubic-bezier(0.5, 0, 0.5, 1);
+}
+@keyframes pulse-purple {
+    0% { transform: translate(-80%, -60%) scale(1); }
+    100% { transform: translate(-40%, -50%) scale(1.3); }
+}
+@keyframes pulse-cyan {
+    0% { transform: translate(70%, 50%) scale(1.2); }
+    100% { transform: translate(30%, 40%) scale(1); }
+}
+
+
+.container { width: 90%; max-width: 1200px; margin: 0 auto; }
+
+/* =================================================================
+   2. STYLES & ANIMATIONS GLOBAUX
+   ================================================================= */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1);
+}
+.scroll-reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+.gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.section-title { text-align: center; margin-bottom: 4rem; }
+.section-title h2 { font-size: 2.8rem; font-weight: 700; margin-bottom: 1rem; }
+.section-title p { font-size: 1.1rem; color: var(--c-text-secondary); max-width: 600px; margin: 0 auto; }
+
+.btn {
+    text-decoration: none; padding: 1rem 2rem; border-radius: 50px;
+    font-weight: 600; display: inline-block;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none; cursor: pointer;
+}
+.btn:hover { transform: translateY(-3px) scale(1.05); }
+
+.btn-primary {
+    background: var(--gradient-primary); color: #fff;
+}
+.btn-primary:hover {
+    box-shadow: 0 10px 25px var(--c-glow-purple);
+}
+.btn-secondary {
+    background: var(--c-bg-card); color: var(--c-text-primary);
+    border: 1px solid var(--c-border);
+}
+.btn-secondary:hover {
+    border-color: var(--c-accent-cyan);
+    box-shadow: 0 0 15px var(--c-glow-cyan);
+}
+
+/* =================================================================
+   3. HEADER
+   ================================================================= */
+header {
+    background: rgba(13, 11, 20, 0.6);
+    backdrop-filter: blur(12px);
+    position: fixed; top: 0; left: 0; width: 100%;
+    height: var(--header-height);
+    border-bottom: 1px solid var(--c-border);
+    z-index: 1000;
+}
+.header-container { display: flex; justify-content: space-between; align-items: center; height: 100%; }
+.header-branding { display: flex; align-items: center; gap: 1rem; text-decoration: none; color: var(--c-text-primary); }
+.header-branding img { width: 40px; }
+.header-branding h1 { font-size: 1.5rem; }
+.header-nav ul { list-style: none; display: flex; align-items: center; gap: 2rem; }
+.header-nav a { text-decoration: none; color: var(--c-text-secondary); font-weight: 500; transition: color 0.3s; }
+.header-nav a:hover, .header-nav a.active { color: var(--c-text-primary); }
+.button-dashboard {
+    background: var(--gradient-primary);
+    color: #fff !important; padding: 0.7rem 1.5rem;
+    border-radius: 50px; font-weight: 600;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.button-dashboard:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px var(--c-glow-purple);
+}
+.mobile-menu-button { display: none; cursor: pointer; }
+.mobile-menu-button .material-icons { font-size: 2rem; }
+
+/* =================================================================
+   4. SECTIONS
+   ================================================================= */
+main { padding-top: var(--header-height); }
+section { padding: 6rem 0; }
+.section-glass {
+    background: var(--c-bg-card);
+    border: 1px solid var(--c-border);
+    border-radius: 25px;
+    padding: 4rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 50px rgba(0,0,0,0.3);
+    margin-top: 2rem;
+}
+
+/* --- Section Héros --- */
+.hero-section {
+    display: flex; align-items: center; gap: 4rem;
+    min-height: calc(90vh - var(--header-height));
+}
+.hero-content { flex: 1; }
+.hero-image { flex: 1; perspective: 1000px; }
+.hero-content h2 { font-size: 3.5rem; font-weight: 700; line-height: 1.2; margin-bottom: 1.5rem; }
+.hero-content p { color: var(--c-text-secondary); font-size: 1.2rem; margin-bottom: 2.5rem; max-width: 500px;}
+.hero-image-inner {
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    animation: float 6s ease-in-out infinite;
+}
+.hero-image img { width: 100%; border-radius: 20px; }
+@keyframes float {
+    0% { transform: translateY(0px) rotateY(-10deg) rotateX(5deg); }
+    50% { transform: translateY(-20px) rotateY(10deg) rotateX(10deg); }
+    100% { transform: translateY(0px) rotateY(-10deg) rotateX(5deg); }
+}
+.hero-buttons { display: flex; gap: 1rem; align-items: center; }
+
+/* --- Section Offres --- */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+.offer-card {
+    background: linear-gradient(145deg, rgba(35,35,45,0.8), rgba(25,25,35,0.8));
+    border: 1px solid var(--c-border);
+    border-radius: 20px; padding: 2rem;
+    text-align: center; backdrop-filter: blur(5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    transition: transform 0.4s, box-shadow 0.4s;
+}
+.offer-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 0 30px var(--c-glow-cyan);
+    border-color: var(--c-accent-cyan);
+}
+.offer-card img { width: 100%; border-radius: 15px; margin-bottom: 1.5rem; }
+.offer-card h3 { font-size: 1.5rem; margin-bottom: 1rem; }
+.offer-card ul { list-style: none; text-align: left; margin: 0 auto 2rem auto; color: var(--c-text-secondary); max-width: 200px; }
+.offer-card ul li { margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+.offer-card ul li::before { content: 'check'; font-family: 'Material Icons'; font-size: 1rem; color: var(--c-accent-cyan); }
+.offer-card .btn { width: 100%; }
+
+/* --- Section Pourquoi nous choisir ? --- */
+.why-us-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem; text-align: center; }
+.why-us-item { padding: 2rem; background: rgba(0,0,0,0.2); border-radius: 15px; border: 1px solid transparent; transition: all 0.3s ease; }
+.why-us-item:hover {
+    transform: translateY(-5px);
+    background: var(--c-bg-card);
+    border-color: var(--c-border);
+}
+.why-us-item .icon { font-size: 3.5rem; background: var(--gradient-primary); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1.5rem; }
+.why-us-item h3 { font-size: 1.5rem; margin-bottom: 1rem; }
+.why-us-item p { color: var(--c-text-secondary); line-height: 1.7; }
+
+/* --- Section Offres Games --- */
+.games-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+.game-card { text-align: center; }
+.game-card .image-wrapper {
+    border-radius: 20px; overflow: hidden;
+    margin-bottom: 1.5rem; position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    transition: transform 0.4s ease;
+}
+.game-card:hover .image-wrapper { transform: scale(1.05); }
+.game-card .image-wrapper::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 20px; padding: 2px;
+    background: var(--gradient-border);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    opacity: 0; transition: opacity 0.4s;
+}
+.game-card:hover .image-wrapper::before { opacity: 1; }
+.game-card img { width: 100%; display: block; }
+.game-card a { color: var(--c-text-primary); text-decoration: none; font-weight: 600; font-size: 1.2rem; transition: color 0.3s; }
+.game-card a:hover { color: var(--c-accent-purple); }
+.view-more-container { text-align: center; margin-top: 4rem; }
+
+/* --- Section Avis Clients --- */
+.reviews-carousel-container {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    cursor: pointer;
+}
+
+.reviews-grid-scroller {
+    display: flex;
+    gap: 2rem;
+    width: max-content;
+    animation: scroll 10s linear infinite;
+}
+
+.reviews-carousel-container:hover .reviews-grid-scroller,
+.reviews-carousel-container.is-paused .reviews-grid-scroller {
+    animation-play-state: paused;
+}
+
+/* --- Section FAQ --- */
+.faq-container { 
+    max-width: 800px; 
+    margin: 0 auto; 
+}
+.faq-item {
+    background: var(--c-bg-card);
+    border: 1px solid var(--c-border);
+    border-radius: 15px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+.faq-item.is-open {
+    border-color: var(--c-accent-cyan);
+    box-shadow: 0 0 20px var(--c-glow-cyan);
+}
+.faq-question {
+    padding: 1.5rem;
+    font-weight: 600; 
+    font-size: 1.1rem;
+    cursor: pointer; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.faq-icon {
+    transition: transform 0.5s ease-out, color 0.4s ease;
+}
+.faq-item.is-open .faq-icon {
+    transform: rotate(180deg);
+    color: var(--c-accent-cyan);
+}
+.faq-answer {
+    padding: 0 1.5rem;
+    max-height: 0;
+    overflow: hidden;
+    color: var(--c-text-secondary);
+    transition: max-height 0.5s ease-out, padding-top 0.5s ease-out, padding-bottom 0.5s ease-out; 
+}
+.faq-item.is-open .faq-answer {
+    padding-top: 0; 
+    padding-bottom: 1.5rem; 
+    max-height: 300px;
+}
+.faq-answer p {
+    line-height: 1.7;
+}
+
+@keyframes scroll {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(calc(-50% - 1rem));
+    }
+}
+
+.review-card {
+    background: var(--c-bg-card);
+    border: 1px solid var(--c-border);
+    border-radius: 20px; padding: 2rem;
+    backdrop-filter: blur(5px);
+    width: clamp(320px, 40vw, 450px);
+    flex-shrink: 0;
+}
+.review-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+.review-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+.review-info h4 { font-size: 1.2rem; }
+.review-stars { color: #f1c40f; }
+.review-body { color: var(--c-text-secondary); font-style: italic; line-height: 1.6; }
+
+
+/* --- Section FAQ --- */
+.faq-container { 
+    max-width: 800px; 
+    margin: 0 auto; 
+}
+.faq-item {
+    background: var(--c-bg-card);
+    border: 1px solid var(--c-border);
+    border-radius: 15px;
+    margin-bottom: 1rem;
+    overflow: hidden; /* Important pour cacher la réponse */
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+.faq-item.is-open {
+    border-color: var(--c-accent-cyan);
+    box-shadow: 0 0 20px var(--c-glow-cyan);
+}
+.faq-question {
+    padding: 1.5rem;
+    font-weight: 600; 
+    font-size: 1.1rem;
+    cursor: pointer; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.faq-icon {
+    transition: transform 0.5s ease-out, color 0.4s ease;
+}
+.faq-item.is-open .faq-icon {
+    transform: rotate(180deg);
+    color: var(--c-accent-cyan);
+}
+.faq-answer {
+    padding: 0 1.5rem; /* Padding horizontal uniquement quand fermé */
+    max-height: 0;
+    overflow: hidden;
+    color: var(--c-text-secondary);
+    /* LA TRANSITION FLUIDE que vous vouliez */
+    transition: max-height 0.5s ease-out, padding-bottom 0.5s ease-out; 
+}
+.faq-item.is-open .faq-answer {
+    max-height: 300px; /* Hauteur cible suffisante */
+    padding-bottom: 1.5rem; /* Le padding s'anime pour donner de l'espace */
+}
+.faq-answer p {
+    line-height: 1.7;
+}
+
+/* =================================================================
+   5. FOOTER
+   ================================================================= */
+footer {
+    background-color: #08070c;
+    padding-top: 4rem; margin-top: 6rem;
+    border-top: 1px solid var(--c-border);
+}
+.footer-container { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; padding-bottom: 3rem; }
+.footer-brand h4 { display: flex; align-items: center; gap: 0.5rem; font-size: 1.2rem; margin-bottom: 1rem; }
+.footer-brand img { width: 30px; }
+.footer-brand p { color: var(--c-text-secondary); font-size: 0.9rem; line-height: 1.6; }
+.footer-div h3 { margin-bottom: 1.5rem; font-size: 1rem; color: var(--c-text-primary); }
+.footer-div ul { list-style: none; }
+.footer-div ul li { margin-bottom: 0.8rem; }
+.footer-div a { text-decoration: none; color: var(--c-text-secondary); transition: color 0.3s; }
+.footer-div a:hover { color: var(--c-accent-cyan); }
+.footer-copyright { text-align: center; padding: 2rem 0; border-top: 1px solid var(--c-border); color: var(--c-text-secondary); font-size: 0.9rem; }
+
+/* =================================================================
+   6. RESPONSIVE DESIGN (MEDIA QUERIES)
+   ================================================================= */
+/* --- Tablettes --- */
+@media (max-width: 992px) {
+    .section-title h2 { font-size: 2.4rem; }
+    .hero-section { flex-direction: column; text-align: center; gap: 2rem; min-height: auto; }
+    .hero-content h2 { font-size: 2.8rem; }
+    .hero-content p { margin: 0 auto 2.5rem auto; }
+    .hero-buttons { justify-content: center; }
+    .card-grid { grid-template-columns: repeat(2, 1fr); }
+    .why-us-grid { grid-template-columns: 1fr; }
+    .games-grid { grid-template-columns: repeat(2, 1fr); }
+    /* .reviews-grid { grid-template-columns: 1fr; } */ /* Remplacé par le carrousel */
+    .footer-container { grid-template-columns: 1fr 1fr; }
+}
+
+/* --- Mobiles --- */
+@media (max-width: 768px) {
+    :root { --header-height: 60px; }
+    section { padding: 4rem 0; }
+    .section-glass { padding: 2rem; }
+
+    .header-nav {
+        display: none;
+        position: absolute;
+        top: var(--header-height);
+        left: 0; right: 0;
+        background: var(--c-bg);
+        border-bottom: 1px solid var(--c-border);
+    }
+    .header-nav.is-open { display: block; }
+    .header-nav ul { flex-direction: column; padding: 1rem 0; gap: 0; }
+    .header-nav li { width: 100%; text-align: center; }
+    .header-nav a { padding: 1rem; display: block; width: 100%; }
+    .mobile-menu-button { display: block; }
+    
+    .hero-content h2 { font-size: 2.2rem; }
+    .hero-content p { font-size: 1rem; }
+    .hero-buttons { flex-direction: column; gap: 1rem; }
+    .btn { padding: 0.8rem 1.6rem; width: 100%; }
+    
+    .card-grid { grid-template-columns: 1fr; }
+    .games-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer-container { grid-template-columns: 1fr; text-align: center; }
+    .footer-brand p { max-width: 100%; }
+}
+
+@media (max-width: 480px) {
+    .games-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body>
+
+    <header>
+        <div class="container header-container">
+            <a href="#" class="header-branding">
+                <img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756846419/image-50_tls8m3.png" alt="Logo Papy Gaming">
+                <h1>Papy <span class="gradient-text">Gaming</span></h1>
+            </a>
+            <nav class="header-nav" id="main-nav">
+                <ul>
+                    <li><a href="#home" class="active">Accueil</a></li>
+                    <li><a href="#offers">Solutions</a></li>
+                    <li><a href="#games">Jeux</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="https://papy-gaming.onrender.com/dashboard.html" class="button-dashboard">DASHBOARD</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-button" id="mobile-menu-btn">
+                <span class="material-icons">menu</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Section Héros -->
+        <section id="home" class="container">
+            <div class="hero-section">
+                <div class="hero-content scroll-reveal">
+                    <h2>L'Hébergement Gaming Qui <span class="gradient-text">Change la Partie.</span></h2>
+                    <p>
+                        Performances extrêmes, latence minimale et support expert. Concentrez-vous sur la victoire, on s'occupe du reste.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="#offers" class="btn btn-primary">Voir les Offres</a>
+                        <a href="https://discord.gg/wc3ahMjA" class="btn btn-secondary">Notre Discord</a>
+                    </div>
+                </div>
+                <div class="hero-image scroll-reveal">
+                    <div class="hero-image-inner">
+                        <img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1759078643/OIP_3_hsckzb.webp" alt="Collage de personnages de jeux vidéo">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Nos meilleures offres -->
+        <section id="offers" class="container">
+            <div class="section-title scroll-reveal">
+                <h2 class="gradient-text">Nos Meilleures Offres</h2>
+                <p>Les configurations plébiscitées par notre communauté pour une expérience de jeu sans compromis.</p>
+            </div>
+            <div class="card-grid">
+                <!-- Offre 1 -->
+                <article class="offer-card scroll-reveal">
+                    <img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841407/minecraft_ijqpl5.jpg" alt="Image du jeu Minecraft">
+                    <h3>Offre Starter</h3>
+                    <ul>
+                        <li>Ryzen 7 5700x 1 vCore</li>
+                        <li>2 Go DDR4 RAM</li>
+                        <li>20 Go NVMe SSD</li>
+                    </ul>
+                    <button href="https://papy-gaming.onrender.com/starter-offer.html" class="btn btn-primary">Configurer</button>
+                </article>
+                <!-- Offre 2 -->
+                <article class="offer-card scroll-reveal" style="transition-delay: 0.1s;">
+                    <img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841414/ss_4d80aa13703f47589123aeef56b3170ccdb3fe9a.1920x1080_vsiswn.jpg" alt="Image du jeu Rust">
+                    <h3>Offre Pro</h3>
+                    <ul>
+                        <li>Ryzen 7 5700x 2 vCore</li>
+                        <li>4 Go DDR4 RAM</li>
+                        <li>40 Go NVMe SSD</li>
+                    </ul>
+                    <button href="https://papy-gaming.onrender.com/pro-offer.html" class="btn btn-primary">Configurer</button>
+                </article>
+                <!-- Offre 3 -->
+                <article class="offer-card scroll-reveal" style="transition-delay: 0.2s;">
+                    <img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841419/carousel-bg_i6mvep.jpg" alt="Image du jeu ARK">
+                    <h3>Offre Elite</h3>
+                    <ul>
+                        <li>Ryzen 7 5700x 4 vCore</li>
+                        <li>8 Go DDR4 RAM</li>
+                        <li>80 Go NVMe SSD</li>
+                    </ul>
+                    <button href="https://papy-gaming.onrender.com/elite-offer.html" class="btn btn-primary">Configurer</button>
+                </article>
+            </div>
+        </section>
+
+        <!-- Section Pourquoi nous choisir ? -->
+        <section id="why-us" class="container">
+            <div class="section-glass">
+                <div class="section-title scroll-reveal">
+                    <h2>Conçu par des <span class="gradient-text">Joueurs</span>, pour des <span class="gradient-text">Joueurs</span></h2>
+                    <p>Nous comprenons ce qui compte : performance brute, stabilité à toute épreuve et un support qui parle votre langue.</p>
+                </div>
+                <div class="why-us-grid">
+                    <div class="why-us-item scroll-reveal">
+                        <div class="icon material-icons">speed</div>
+                        <h3>Performance Pure</h3>
+                        <p>Matériel de dernière génération et réseau optimisé pour un ping minimal et une fluidité maximale.</p>
+                    </div>
+                    <div class="why-us-item scroll-reveal" style="transition-delay: 0.1s;">
+                        <div class="icon material-icons">security</div>
+                        <h3>Protection Anti-DDoS</h3>
+                        <p>Notre protection avancée filtre les attaques pour que votre serveur reste en ligne, même en pleine tempête.</p>
+                    </div>
+                    <div class="why-us-item scroll-reveal" style="transition-delay: 0.2s;">
+                        <div class="icon material-icons">support_agent</div>
+                        <h3>Support Expert 24/7</h3>
+                        <p>Une équipe de passionnés, disponible à toute heure pour vous aider via Discord ou ticket.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Nos différentes offres Games -->
+        <section id="games" class="container">
+            <div class="section-title scroll-reveal">
+                <h2 class="gradient-text">Un Serveur pour Chaque Monde</h2>
+                <p>Découvrez notre catalogue de jeux et trouvez l'offre parfaite pour votre prochaine aventure.</p>
+            </div>
+            <div class="games-grid">
+                <div href="https://papy-gaming.onrender.com/minecraft-offer.html" class="game-card scroll-reveal"><div class="image-wrapper"><img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841407/minecraft_ijqpl5.jpg" alt="Offre Minecraft"></div><a href="https://papy-gaming.onrender.com/minecraft-offer.html">Offre Minecraft</a></div>
+                <div href="https://papy-gaming.onrender.com/ark-offer.html" class="game-card scroll-reveal" style="transition-delay: 0.1s;"><div class="image-wrapper"><img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841419/carousel-bg_i6mvep.jpg" alt="Offre ARK"></div><a href="https://papy-gaming.onrender.com/ark-offer.html">Offre ARK</a></div>
+                <div href="https://papy-gaming.onrender.com/valheim-offer.html" class="game-card scroll-reveal" style="transition-delay: 0.2s;"><div class="image-wrapper"><img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1752229460/Gemini_Generated_Image_5d8jue5d8jue5d8j_lybnue.png" alt="Offre Valheim"></div><a href="https://papy-gaming.onrender.com/valheim-offer.html">Offre Valheim</a></div>
+                <div href="https://papy-gaming.onrender.com/rust-offer.html" class="game-card scroll-reveal" style="transition-delay: 0.3s;"><div class="image-wrapper"><img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841414/ss_4d80aa13703f47589123aeef56b3170ccdb3fe9a.1920x1080_vsiswn.jpg" alt="Offre Rust"></div><a href="https://papy-gaming.onrender.com/rust-offer.html">Offre Rust</a></div>
+            </div>
+            <div class="view-more-container scroll-reveal">
+                <button onclick="location.href='https://papy-gaming.onrender.com/games.html'" class="btn btn-secondary">Voir tous les jeux</button>
+            </div>
+        </section>
+        
+        <!-- Section Avis Clients (Nouveau) -->
+        <section id="reviews" class="container">
+            <div class="section-title scroll-reveal">
+                <h2 class="gradient-text">Ils Nous Font Confiance</h2>
+                <p>La satisfaction de notre communauté est notre plus grande récompense.</p>
+            </div>
+            <div id="reviews-carousel-container" class="reviews-carousel-container scroll-reveal">
+                <div class="reviews-grid-scroller">
+                    <!-- Original Cards -->
+                    <article class="review-card">
+                        <div class="review-header">
+                            <img class="review-avatar" src="https://i.pravatar.cc/50?u=a" alt="Avatar client">
+                            <div class="review-info">
+                                <h4>AlexGamer75</h4>
+                                <div class="review-stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-body">"Le meilleur hébergeur que j'ai pu tester. Mon serveur Minecraft est ultra fluide et le support a répondu à ma question en moins de 10 minutes. Incroyable !"</p>
+                    </article>
+                     <article class="review-card">
+                        <div class="review-header">
+                            <img class="review-avatar" src="https://i.pravatar.cc/50?u=b" alt="Avatar client">
+                            <div class="review-info">
+                                <h4>Sophie_ARK</h4>
+                                <div class="review-stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-body">"La protection anti-DDoS a sauvé notre soirée de raid plus d'une fois. On se sent vraiment en sécurité chez Papy Gaming. Je recommande à 100% !"</p>
+                    </article>
+                    <!-- Duplicated Cards for seamless loop -->
+                    <article class="review-card">
+                        <div class="review-header">
+                            <img class="review-avatar" src="https://i.pravatar.cc/50?u=a" alt="Avatar client">
+                            <div class="review-info">
+                                <h4>AlexGamer75</h4>
+                                <div class="review-stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-body">"Le meilleur hébergeur que j'ai pu tester. Mon serveur Minecraft est ultra fluide et le support a répondu à ma question en moins de 10 minutes. Incroyable !"</p>
+                    </article>
+                     <article class="review-card">
+                        <div class="review-header">
+                            <img class="review-avatar" src="https://i.pravatar.cc/50?u=b" alt="Avatar client">
+                            <div class="review-info">
+                                <h4>Sophie_ARK</h4>
+                                <div class="review-stars">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="review-body">"La protection anti-DDoS a sauvé notre soirée de raid plus d'une fois. On se sent vraiment en sécurité chez Papy Gaming. Je recommande à 100% !"</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section FAQ -->
+<section id="faq" class="container">
+    <div class="section-glass">
+        <div class="section-title scroll-reveal">
+            <h2 class="gradient-text">Foire Aux Questions</h2>
+            <p>Vous avez des questions ? Nous avons les réponses.</p>
+        </div>
+        <div class="faq-container scroll-reveal">
+            <!-- FAQ Item 1 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Quels types de jeux puis-je héberger ?</span>
+                    <span class="faq-icon material-icons">expand_more</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Nous proposons une large gamme de jeux populaires, dont Minecraft, ARK, Rust, Valheim, et bien d'autres. Vous pouvez consulter notre liste complète sur la page des offres.</p>
+                </div>
+            </div>
+            <!-- FAQ Item 2 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Comment fonctionne la protection Anti-DDoS ?</span>
+                    <span class="faq-icon material-icons">expand_more</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Notre protection Anti-DDoS est active en permanence et filtre automatiquement le trafic malveillant pour garantir que votre serveur reste accessible à tout moment, même en cas d'attaque.</p>
+                </div>
+            </div>
+            <!-- FAQ Item 3 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Puis-je changer d'offre plus tard ?</span>
+                    <span class="faq-icon material-icons">expand_more</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Oui, absolument ! Vous pouvez faire évoluer votre offre à la hausse ou à la baisse à tout moment depuis votre panneau de contrôle en quelques clics seulement.</p>
+                </div>
+            </div>
+             <!-- FAQ Item 4 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Quels sont les horaires du support technique ?</span>
+                    <span class="faq-icon material-icons">expand_more</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Notre équipe de support technique est composée de passionnés et est disponible 24 heures sur 24, 7 jours sur 7, via ticket ou sur notre serveur Discord pour vous aider.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-brand">
+                    <h4><img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756846419/image-50_tls8m3.png" alt="Logo Papy Gaming">Papy Gaming</h4>
+                    <p>L'hébergement gaming qui change la partie. Performance, fiabilité et support expert conçus pour les joueurs exigeants.</p>
+                </div>
+                <div class="footer-div">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="#games">Offres Games</a></li>
+                        <li><a href="#VPS-offers">Offres VPS</a></li>
+                    </ul>
+                </div>
+                <div class="footer-div">
+                    <h3>Informations</h3>
+                    <ul>
+                        <li><a href="#about">À Propos de Nous</a></li>
+                        <li><a href="#contact">Nous Contacter</a></li>
+                    </ul>
+                </div>
+                <div class="footer-div">
+                    <h3>Contact & Réseaux</h3>
+                    <ul>
+                        <li><a href="mailto:support@papygaming.fr">support@papygaming.fr</a></li>
+                        <li><a href="https://discord.gg/wc3ahMjA" target="_blank">Support Discord</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                &copy; 2025 Papy Gaming. Tous droits réservés.
+            </div>
+        </div>
+    </footer>
+
+    <!-- =================================================================
+       6. JAVASCRIPT
+       ================================================================= -->
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // --- Animation au scroll ---
+        const revealElements = document.querySelectorAll(".scroll-reveal");
+        const observerOptions = {
+            root: null,
+            rootMargin: "0px",
+            threshold: 0.1
+        };
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("is-visible");
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        revealElements.forEach(el => { observer.observe(el); });
+
+        // --- Menu mobile ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const nav = document.getElementById('main-nav');
+        mobileMenuBtn.addEventListener('click', () => {
+            nav.classList.toggle('is-open');
+        });
+
+        // --- Carousel des avis ---
+        const reviewsCarousel = document.getElementById('reviews-carousel-container');
+        if (reviewsCarousel) {
+            let pauseTimer = null;
+
+            reviewsCarousel.addEventListener('click', () => {
+                // On efface le timer précédent pour réinitialiser le compte à rebours si on clique à nouveau
+                clearTimeout(pauseTimer);
+
+                // On ajoute la classe qui met en pause l'animation via le CSS
+                reviewsCarousel.classList.add('is-paused');
+                
+                // On lance un timer pour retirer la classe et reprendre l'animation après 2 minutes (120000 ms)
+                pauseTimer = setTimeout(() => {
+                    reviewsCarousel.classList.remove('is-paused');
+                }, 120000);
+            });
+        }
+    });
+    document.addEventListener("DOMContentLoaded", () => {
+        // ... (votre code existant pour le scroll et le menu mobile) ...
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const nav = document.getElementById('main-nav');
+        mobileMenuBtn.addEventListener('click', () => {
+            nav.classList.toggle('is-open');
+        });
+        
+        // --- ACCORDÉON FAQ ---
+        const faqItems = document.querySelectorAll('.faq-item');
+
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            question.addEventListener('click', () => {
+                const wasOpen = item.classList.contains('is-open');
+
+                // Ferme toutes les autres questions
+                faqItems.forEach(otherItem => {
+                    otherItem.classList.remove('is-open');
+                });
+
+                // Si la question cliquée n'était pas déjà ouverte, on l'ouvre
+                if (!wasOpen) {
+                    item.classList.add('is-open');
+                }
+            });
+        });
+    });
+    </script>
+
+</body>
+</html>
