@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Papy Gaming - Découvrez nos offres d'hébergement de serveurs de jeu.">
+
+    <title>Papy Gaming | Nos Offres Games</title>
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756846419/image-50_tls8m3.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<style>
+/* =================================================================
+   1. VARIABLES DE THÈME & RESET GLOBAL
+   ================================================================= */
+:root {
+    --c-bg: #0D0B14;
+    --c-bg-card: #16151F; /* Un peu plus clair pour les cartes */
+    --c-bg-card-light: #22212b;
+    --c-text-primary: #F0F0F0;
+    --c-text-secondary: #a09db8;
+    --c-border: rgba(255, 255, 255, 0.1);
+    --c-accent-purple: #9E42F5;
+    --c-accent-cyan: #00C2CB;
+    --c-success: #28a745;
+    --c-glow-purple: rgba(158, 66, 245, 0.4);
+    --c-glow-cyan: rgba(0, 194, 203, 0.4);
+    
+    --gradient-primary: linear-gradient(90deg, var(--c-accent-purple), var(--c-accent-cyan));
+    --gradient-border: linear-gradient(135deg, var(--c-accent-purple), var(--c-accent-cyan));
+
+    --font-primary: 'Poppins', sans-serif;
+    --header-height: 70px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--c-bg);
+    color: var(--c-text-primary);
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* --- EFFET D'ARRIÈRE-PLAN NÉON ANIMÉ --- */
+body::before, body::after {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 60vw;
+    height: 60vw;
+    max-width: 800px;
+    max-height: 800px;
+    border-radius: 50%;
+    z-index: -1;
+    opacity: 0.15;
+    filter: blur(120px);
+    will-change: transform;
+}
+body::before {
+    background: radial-gradient(circle, var(--c-accent-purple), transparent 60%);
+    animation: pulse-purple 20s infinite alternate cubic-bezier(0.5, 0, 0.5, 1);
+}
+body::after {
+    background: radial-gradient(circle, var(--c-accent-cyan), transparent 60%);
+    animation: pulse-cyan 25s infinite alternate cubic-bezier(0.5, 0, 0.5, 1);
+}
+@keyframes pulse-purple {
+    0% { transform: translate(-80%, -60%) scale(1); }
+    100% { transform: translate(-40%, -50%) scale(1.3); }
+}
+@keyframes pulse-cyan {
+    0% { transform: translate(70%, 50%) scale(1.2); }
+    100% { transform: translate(30%, 40%) scale(1); }
+}
+
+
+.container { width: 90%; max-width: 1200px; margin: 0 auto; }
+
+/* =================================================================
+   2. STYLES & ANIMATIONS GLOBAUX
+   ================================================================= */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1);
+}
+.scroll-reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+.gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.section-title { text-align: center; margin-bottom: 4rem; }
+.section-title h2 { font-size: 2.8rem; font-weight: 700; margin-bottom: 1rem; }
+.section-title p { font-size: 1.1rem; color: var(--c-text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.6; }
+
+.btn {
+    text-decoration: none; padding: 0.8rem 1.8rem; border-radius: 8px;
+    font-weight: 600; display: inline-block;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none; cursor: pointer;
+    background: var(--gradient-primary); color: #fff;
+    text-align: center;
+}
+.btn:hover { 
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 25px var(--c-glow-purple);
+}
+
+/* =================================================================
+   3. HEADER
+   ================================================================= */
+header {
+    background: rgba(13, 11, 20, 0.6);
+    backdrop-filter: blur(12px);
+    position: fixed; top: 0; left: 0; width: 100%;
+    height: var(--header-height);
+    border-bottom: 1px solid var(--c-border);
+    z-index: 1000;
+}
+.header-container { display: flex; justify-content: space-between; align-items: center; height: 100%; }
+.header-branding { display: flex; align-items: center; gap: 1rem; text-decoration: none; color: var(--c-text-primary); }
+.header-branding img { width: 40px; }
+.header-branding h1 { font-size: 1.5rem; }
+.header-nav ul { list-style: none; display: flex; align-items: center; gap: 2rem; }
+.header-nav a { text-decoration: none; color: var(--c-text-secondary); font-weight: 500; transition: color 0.3s; }
+.header-nav a:hover, .header-nav a.active { color: var(--c-text-primary); }
+.button-dashboard {
+    background: var(--gradient-primary);
+    color: #fff !important; padding: 0.7rem 1.5rem;
+    border-radius: 50px; font-weight: 600;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.button-dashboard:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px var(--c-glow-purple);
+}
+.mobile-menu-button { display: none; cursor: pointer; background: none; border: none; color: var(--c-text-primary); padding: 0.5rem; }
+.mobile-menu-button .material-icons { font-size: 2rem; }
+
+/* =================================================================
+   4. SECTIONS
+   ================================================================= */
+main { padding-top: var(--header-height); }
+section { padding: 6rem 0; }
+
+/* =================================================================
+   NOUVEAUX STYLES POUR LA PAGE OFFRES GAMES
+   ================================================================= */
+
+/* --- Barre de recherche --- */
+.search-bar-container {
+    display: flex;
+    justify-content: center;
+    margin: -2rem auto 4rem auto;
+    max-width: 600px;
+}
+.search-bar {
+    position: relative;
+    width: 100%;
+}
+.search-bar .material-icons {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--c-text-secondary);
+}
+.search-bar input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    background-color: var(--c-bg-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    color: var(--c-text-primary);
+    font-size: 1rem;
+    font-family: var(--font-primary);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+.search-bar input:focus {
+    outline: none;
+    border-color: var(--c-accent-cyan);
+    box-shadow: 0 0 15px var(--c-glow-cyan);
+}
+
+/* --- Grille des offres --- */
+.game-offers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+}
+.game-offer-card {
+    background-color: var(--c-bg-card);
+    border-radius: 15px;
+    border: 1px solid var(--c-border);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.game-offer-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 0 30px var(--c-glow-purple);
+}
+.offer-card-header img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+}
+.offer-card-body {
+    padding: 1.5rem;
+    flex-grow: 1;
+}
+.offer-card-body h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+.offer-card-body .description {
+    color: var(--c-text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--c-border);
+    padding-bottom: 1.5rem;
+}
+.offer-card-body h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--c-text-primary);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.offer-card-body ul {
+    list-style: none;
+    margin-bottom: 1.5rem;
+    color: var(--c-text-secondary);
+}
+.offer-card-body ul li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+.offer-card-body ul .material-icons {
+    font-size: 1.2rem;
+    color: var(--c-accent-cyan);
+}
+.offer-card-body .options-list .material-icons {
+    color: var(--c-success);
+}
+.offer-card-footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--c-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(0,0,0,0.2);
+}
+.offer-card-footer .price {
+    font-size: 0.9rem;
+    color: var(--c-text-secondary);
+}
+.offer-card-footer .price strong {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--c-text-primary);
+}
+
+/* --- Section Pourquoi nous choisir ? --- */
+#why-choose-us { padding-top: 0; }
+.why-choose-us-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+.why-choose-us-item {
+    background: var(--c-bg-card);
+    border: 1px solid var(--c-border);
+    border-radius: 15px;
+    padding: 2rem;
+    transition: background-color 0.3s;
+}
+.why-choose-us-item:hover {
+    background-color: var(--c-bg-card-light);
+}
+.why-choose-us-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.why-choose-us-header .material-icons {
+    font-size: 2.5rem;
+    color: var(--c-accent-cyan);
+}
+.why-choose-us-header h3 {
+    font-size: 1.2rem;
+}
+.why-choose-us-item p {
+    color: var(--c-text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+}
+.why-choose-us-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: rgba(0, 194, 203, 0.1);
+    color: var(--c-accent-cyan);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+.why-choose-us-tag.purple {
+    background-color: rgba(158, 66, 245, 0.1);
+    color: var(--c-accent-purple);
+}
+.why-choose-us-tag.green {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: var(--c-success);
+}
+.why-choose-us-tag.yellow {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+
+/* =================================================================
+   5. FOOTER
+   ================================================================= */
+footer {
+    background-color: #08070c;
+    padding-top: 4rem; margin-top: 6rem;
+    border-top: 1px solid var(--c-border);
+}
+.footer-container { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; padding-bottom: 3rem; }
+.footer-brand h4 { display: flex; align-items: center; gap: 0.5rem; font-size: 1.2rem; margin-bottom: 1rem; }
+.footer-brand img { width: 30px; }
+.footer-brand p { color: var(--c-text-secondary); font-size: 0.9rem; line-height: 1.6; }
+.footer-div h3 { margin-bottom: 1.5rem; font-size: 1rem; color: var(--c-text-primary); }
+.footer-div ul { list-style: none; }
+.footer-div ul li { margin-bottom: 0.8rem; }
+.footer-div a { text-decoration: none; color: var(--c-text-secondary); transition: color 0.3s; }
+.footer-div a:hover { color: var(--c-accent-cyan); }
+.footer-copyright { text-align: center; padding: 2rem 0; border-top: 1px solid var(--c-border); color: var(--c-text-secondary); font-size: 0.9rem; }
+
+/* =================================================================
+   6. RESPONSIVE DESIGN (MEDIA QUERIES)
+   ================================================================= */
+@media (max-width: 992px) {
+    .section-title h2 { font-size: 2.4rem; }
+    .why-choose-us-grid { grid-template-columns: 1fr; }
+    .footer-container { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+    :root { --header-height: 60px; }
+    section { padding: 4rem 0; }
+    .why-choose-us-grid { grid-template-columns: 1fr; }
+
+    /* --- Menu mobile --- */
+    .header-nav {
+        position: absolute;
+        top: var(--header-height);
+        left: 0; right: 0;
+        background: var(--c-bg);
+        border-bottom: 1px solid var(--c-border);
+        height: calc(100vh - var(--header-height));
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-20px);
+        transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .header-nav.is-open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    .header-nav ul {
+        flex-direction: column;
+        padding: 1rem 0;
+        gap: 1rem;
+    }
+    .header-nav li { width: 100%; text-align: center; }
+    .header-nav a {
+        padding: 1rem;
+        display: block;
+        width: 100%;
+        font-size: 1.2rem;
+    }
+    .mobile-menu-button {
+        display: block;
+        z-index: 1001;
+    }
+    .mobile-menu-button .material-icons {
+        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .mobile-menu-button.is-active .material-icons {
+        transform: rotate(90deg);
+    }
+    
+    .footer-container { grid-template-columns: 1fr; text-align: center; }
+    .footer-brand p { max-width: 100%; }
+}
+
+</style>
+</head>
+
+<body>
+
+    <header>
+        <div class="container header-container">
+            <a href="#" class="header-branding">
+                <img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756846419/image-50_tls8m3.png" alt="Logo Papy Gaming">
+                <h1>Papy <span class="gradient-text">Gaming</span></h1>
+            </a>
+            <nav class="header-nav" id="main-nav">
+                <ul>
+                    <li><a href="#home">Accueil</a></li>
+                    <li><a href="#games" class="active">Offres Games</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="https://papy-gaming.onrender.com/dashboard.html" class="button-dashboard">DASHBOARD</a></li>
+                </ul>
+            </nav>
+            <button class="mobile-menu-button" id="mobile-menu-btn" aria-label="Ouvrir le menu">
+                <span class="material-icons">menu</span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        
+        <!-- SECTION OFFRES GAMES -->
+        <section id="games" class="container">
+            <div class="section-title scroll-reveal">
+                <h2 class="gradient-text">Nos différentes offres Games</h2>
+                <p>
+                    Papy Gaming Teste : Bonjour à tous j'espère que vous aller bien je vais très bien et toi tu vas comment ptdr t'es trop beau papy. Venez vous héberger chez nous pour de meilleurs conditions
+                </p>
+            </div>
+
+            <div class="search-bar-container scroll-reveal">
+                <div class="search-bar">
+                    <span class="material-icons">search</span>
+                    <input type="text" placeholder="Rechercher votre jeu à héberger...">
+                </div>
+            </div>
+
+            <div class="game-offers-grid">
+                <!-- Carte Offre 1 -->
+                <article class="game-offer-card scroll-reveal">
+                    <div class="offer-card-header">
+                        <img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841414/ss_4d80aa13703f47589123aeef56b3170ccdb3fe9a.1920x1080_vsiswn.jpg" alt="Bannière de jeu">
+                    </div>
+                    <div class="offer-card-body">
+                        <h3>Offres Games</h3>
+                        <p class="description">Jouer avec vos amis et détendez-vous, vous pouvez construire, faire un build fight ect, Bonjour ça va moi ça va niquel et toi comment ça va moi</p>
+                        
+                        <h4>Composition</h4>
+                        <ul>
+                            <li><span class="material-icons">memory</span> vCPU | Ryzen 9 5950X</li>
+                            <li><span class="material-icons">developer_board</span> Go | Hynix® DDR4</li>
+                            <li><span class="material-icons">save</span> Go/Cloud | SSD NVME</li>
+                        </ul>
+
+                        <h4>Option comprises</h4>
+                        <ul class="options-list">
+                            <li><span class="material-icons">check_circle</span> DDOS Protection</li>
+                            <li><span class="material-icons">check_circle</span> Installation instantanée</li>
+                            <li><span class="material-icons">check_circle</span> Support 24/7</li>
+                            <li><span class="material-icons">check_circle</span> Sauvegarde Automatique</li>
+                        </ul>
+                    </div>
+                    <div class="offer-card-footer">
+                        <div class="price">À partir de <br><strong>20€</strong>/mois</div>
+                        <a href="https://papy-gaming.com/configurer" class="btn">Configurer</a>
+                    </div>
+                </article>
+
+                <!-- Carte Offre 2 -->
+                <article class="game-offer-card scroll-reveal" style="transition-delay: 0.1s;">
+                    <div class="offer-card-header">
+                        <img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841407/minecraft_ijqpl5.jpg" alt="Bannière de jeu">
+                    </div>
+                    <div class="offer-card-body">
+                        <h3>Offres Games</h3>
+                        <p class="description">Jouer avec vos amis et détendez-vous, vous pouvez construire, faire un build fight ect, Bonjour ça va moi ça va niquel et toi comment ça va moi</p>
+                        
+                        <h4>Composition</h4>
+                        <ul>
+                           <li><span class="material-icons">memory</span> vCPU | Ryzen 9 5950X</li>
+                           <li><span class="material-icons">developer_board</span> Go | Hynix® DDR4</li>
+                           <li><span class="material-icons">save</span> Go/Cloud | SSD NVME</li>
+                        </ul>
+
+                        <h4>Option comprises</h4>
+                        <ul class="options-list">
+                            <li><span class="material-icons">check_circle</span> DDOS Protection</li>
+                            <li><span class="material-icons">check_circle</span> Installation instantanée</li>
+                            <li><span class="material-icons">check_circle</span> Support 24/7</li>
+                            <li><span class="material-icons">check_circle</span> Sauvegarde Automatique</li>
+                        </ul>
+                    </div>
+                    <div class="offer-card-footer">
+                        <div class="price">À partir de <br><strong>30€</strong>/mois</div>
+                        <a href="https://papy-gaming.com/configurer" class="btn">Configurer</a>
+                    </div>
+                </article>
+
+                <!-- Carte Offre 3 -->
+                <article class="game-offer-card scroll-reveal" style="transition-delay: 0.2s;">
+                    <div class="offer-card-header">
+                        <img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841419/carousel-bg_i6mvep.jpg" alt="Bannière de jeu">
+                    </div>
+                    <div class="offer-card-body">
+                        <h3>Offres Games</h3>
+                        <p class="description">Jouer avec vos amis et détendez-vous, vous pouvez construire, faire un build fight ect, Bonjour ça va moi ça va niquel et toi comment ça va moi</p>
+                        
+                        <h4>Composition</h4>
+                        <ul>
+                           <li><span class="material-icons">memory</span> vCPU | Ryzen 9 5950X</li>
+                           <li><span class="material-icons">developer_board</span> Go | Hynix® DDR4</li>
+                           <li><span class="material-icons">save</span> Go/Cloud | SSD NVME</li>
+                        </ul>
+
+                        <h4>Option comprises</h4>
+                        <ul class="options-list">
+                            <li><span class="material-icons">check_circle</span> DDOS Protection</li>
+                            <li><span class="material-icons">check_circle</span> Installation instantanée</li>
+                            <li><span class="material-icons">check_circle</span> Support 24/7</li>
+                            <li><span class="material-icons">check_circle</span> Sauvegarde Automatique</li>
+                        </ul>
+                    </div>
+                    <div class="offer-card-footer">
+                        <div class="price">À partir de <br><strong>40€</strong>/mois</div>
+                        <a href="https://papy-gaming.com/configurer" class="btn">Configurer</a>
+                    </div>
+                </article>
+
+                <!-- Carte Offre 4 -->
+                <article class="game-offer-card scroll-reveal">
+                    <div class="offer-card-header">
+                        <img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841419/carousel-bg_i6mvep.jpg" alt="Bannière de jeu">
+                    </div>
+                    <div class="offer-card-body">
+                        <h3>Offres Games</h3>
+                        <p class="description">Jouer avec vos amis et détendez-vous, vous pouvez construire, faire un build fight ect, Bonjour ça va moi ça va niquel et toi comment ça va moi</p>
+                        
+                        <h4>Composition</h4>
+                        <ul>
+                           <li><span class="material-icons">memory</span> vCPU | Ryzen 9 5950X</li>
+                           <li><span class="material-icons">developer_board</span> Go | Hynix® DDR4</li>
+                           <li><span class="material-icons">save</span> Go/Cloud | SSD NVME</li>
+                        </ul>
+
+                        <h4>Option comprises</h4>
+                        <ul class="options-list">
+                            <li><span class="material-icons">check_circle</span> DDOS Protection</li>
+                            <li><span class="material-icons">check_circle</span> Installation instantanée</li>
+                            <li><span class="material-icons">check_circle</span> Support 24/7</li>
+                            <li><span class="material-icons">check_circle</span> Sauvegarde Automatique</li>
+                        </ul>
+                    </div>
+                    <div class="offer-card-footer">
+                        <div class="price">À partir de <br><strong>50€</strong>/mois</div>
+                        <a href="https://papy-gaming.com/configurer" class="btn">Configurer</a>
+                    </div>
+                </article>
+
+                <!-- Carte Offre 5 -->
+                <article class="game-offer-card scroll-reveal" style="transition-delay: 0.1s;">
+                    <div class="offer-card-header">
+                        <img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841414/ss_4d80aa13703f47589123aeef56b3170ccdb3fe9a.1920x1080_vsiswn.jpg" alt="Bannière de jeu">
+                    </div>
+                    <div class="offer-card-body">
+                        <h3>Offres Games</h3>
+                        <p class="description">Jouer avec vos amis et détendez-vous, vous pouvez construire, faire un build fight ect, Bonjour ça va moi ça va niquel et toi comment ça va moi</p>
+                        
+                        <h4>Composition</h4>
+                        <ul>
+                           <li><span class="material-icons">memory</span> vCPU | Ryzen 9 5950X</li>
+                           <li><span class="material-icons">developer_board</span> Go | Hynix® DDR4</li>
+                           <li><span class="material-icons">save</span> Go/Cloud | SSD NVME</li>
+                        </ul>
+
+                        <h4>Option comprises</h4>
+                        <ul class="options-list">
+                            <li><span class="material-icons">check_circle</span> DDOS Protection</li>
+                            <li><span class="material-icons">check_circle</span> Installation instantanée</li>
+                            <li><span class="material-icons">check_circle</span> Support 24/7</li>
+                            <li><span class="material-icons">check_circle</span> Sauvegarde Automatique</li>
+                        </ul>
+                    </div>
+                    <div class="offer-card-footer">
+                        <div class="price">À partir de <br><strong>60€</strong>/mois</div>
+                        <a href="https://papy-gaming.com/configurer" class="btn">Configurer</a>
+                    </div>
+                </article>
+
+                <!-- Carte Offre 6 -->
+                <article class="game-offer-card scroll-reveal" style="transition-delay: 0.2s;">
+                    <div class="offer-card-header">
+                        <img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756841407/minecraft_ijqpl5.jpg" alt="Bannière de jeu">
+                    </div>
+                    <div class="offer-card-body">
+                        <h3>Offres Games</h3>
+                        <p class="description">Jouer avec vos amis et détendez-vous, vous pouvez construire, faire un build fight ect, Bonjour ça va moi ça va niquel et toi comment ça va moi</p>
+                        
+                        <h4>Composition</h4>
+                        <ul>
+                           <li><span class="material-icons">memory</span> vCPU | Ryzen 9 5950X</li>
+                           <li><span class="material-icons">developer_board</span> Go | Hynix® DDR4</li>
+                           <li><span class="material-icons">save</span> Go/Cloud | SSD NVME</li>
+                        </ul>
+
+                        <h4>Option comprises</h4>
+                        <ul class="options-list">
+                            <li><span class="material-icons">check_circle</span> DDOS Protection</li>
+                            <li><span class="material-icons">check_circle</span> Installation instantanée</li>
+                            <li><span class="material-icons">check_circle</span> Support 24/7</li>
+                            <li><span class="material-icons">check_circle</span> Sauvegarde Automatique</li>
+                        </ul>
+                    </div>
+                    <div class="offer-card-footer">
+                        <div class="price">À partir de <br><strong>70€</strong>/mois</div>
+                        <a href="https://papy-gaming.com/configurer" class="btn">Configurer</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- SECTION POURQUOI NOUS CHOISIR -->
+        <section id="why-choose-us" class="container">
+             <div class="section-title scroll-reveal">
+                <h2 class="gradient-text">Pourquoi choisir nos offres games ?</h2>
+            </div>
+            <div class="why-choose-us-grid">
+                <!-- Item 1 -->
+                <div class="why-choose-us-item scroll-reveal">
+                    <div class="why-choose-us-header">
+                        <h3>⚡Déploiement Ultra-Rapide</h3>
+                    </div>
+                    <p>Votre serveur de jeu est prêt en moins de 2 minutes ! Déploiement automatisé avec stockage NVMe et réseau 10 Gbit/s pour des performances optimales.</p>
+                    <div class="why-choose-us-tag green"><span class="material-icons" style="font-size: 1rem;">timer</span> Déploiement en 120 secondes</div>
+                </div>
+                 <!-- Item 2 -->
+                <div class="why-choose-us-item scroll-reveal" style="transition-delay: 0.1s;">
+                    <div class="why-choose-us-header">
+                        <h3>🛡️Protection Anti-DDoS Militaire</h3>
+                    </div>
+                    <p>Sécurité de niveau entreprise qui filtre automatiquement les attaques DDoS. Votre serveur reste en ligne même lors des plus grosses attaques.</p>
+                     <div class="why-choose-us-tag purple"><span class="material-icons" style="font-size: 1rem;">verified_user</span> Protection 10 gratuite</div>
+                </div>
+                 <!-- Item 3 -->
+                <div class="why-choose-us-item scroll-reveal" style="transition-delay: 0.2s;">
+                    <div class="why-choose-us-header">
+                        <h3>🎧Support Gaming Expert 24/7</h3>
+                    </div>
+                    <p>Équipe technique spécialisée gaming disponible 24h/7j, en français. Résolution moyenne des tickets en moins de 15 minutes.</p>
+                     <div class="why-choose-us-tag"><span class="material-icons" style="font-size: 1rem;">comment</span> Réponse < 15 min</div>
+                </div>
+                <!-- Item 4 -->
+                <div class="why-choose-us-item scroll-reveal">
+                    <div class="why-choose-us-header">
+                        <h3>🎮Installation Mods/Plugins 1-Clic</h3>
+                    </div>
+                    <p>Panel de contrôle exclusif pour installer automatiquement vos mods, plugins et frameworks favoris. Plus de 2000 addons disponibles !</p>
+                    <div class="why-choose-us-tag purple"><span class="material-icons" style="font-size: 1rem;">add_box</span> +2000 mods disponibles</div>
+                </div>
+                 <!-- Item 5 -->
+                <div class="why-choose-us-item scroll-reveal" style="transition-delay: 0.1s;">
+                    <div class="why-choose-us-header">
+                        <h3>FR. Qualité Française</h3>
+                    </div>
+                    <p>Hébergement premium basé en France avec hardware Intel Xeon de dernière génération et uptime garanti 99.9% par contrat SLA.</p>
+                     <div class="why-choose-us-tag green"><span class="material-icons" style="font-size: 1rem;">check</span> Qualité Française garantie</div>
+                </div>
+                 <!-- Item 6 -->
+                <div class="why-choose-us-item scroll-reveal" style="transition-delay: 0.2s;">
+                    <div class="why-choose-us-header">
+                        <h3>💰Prix Imbattables</h3>
+                    </div>
+                    <p>Les meilleurs prix du marché européen avec -30% automatiques et codes promo exclusifs. Rapport qualité-prix exceptionnel garanti !</p>
+                     <div class="why-choose-us-tag yellow"><span class="material-icons" style="font-size: 1rem;">sell</span> Code SUMMER30 actif</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-brand">
+                    <h4><img src="https://res.cloudinary.com/dzmyybvbu/image/upload/v1756846419/image-50_tls8m3.png" alt="Logo Papy Gaming">Papy Gaming</h4>
+                    <p>L'hébergement gaming qui change la partie. Performance, fiabilité et support expert conçus pour les joueurs exigeants.</p>
+                </div>
+                <div class="footer-div">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="#games">Offres Games</a></li>
+                        <li><a href="#VPS-offers">Offres VPS</a></li>
+                    </ul>
+                </div>
+                <div class="footer-div">
+                    <h3>Informations</h3>
+                    <ul>
+                        <li><a href="#about">À Propos de Nous</a></li>
+                        <li><a href="#contact">Nous Contacter</a></li>
+                    </ul>
+                </div>
+                <div class="footer-div">
+                    <h3>Contact & Réseaux</h3>
+                    <ul>
+                        <li><a href="mailto:support@papygaming.fr">support@papygaming.fr</a></li>
+                        <li><a href="https://discord.gg/wc3ahMjA" target="_blank">Support Discord</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                &copy; 2025 Papy Gaming. Tous droits réservés.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // --- Animation au scroll ---
+        const revealElements = document.querySelectorAll(".scroll-reveal");
+        const observerOptions = {
+            root: null,
+            rootMargin: "0px",
+            threshold: 0.1
+        };
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("is-visible");
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        revealElements.forEach(el => { observer.observe(el); });
+
+        // --- Menu mobile ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const nav = document.getElementById('main-nav');
+        const menuIcon = mobileMenuBtn.querySelector('.material-icons');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            const isOpen = nav.classList.toggle('is-open');
+            mobileMenuBtn.classList.toggle('is-active', isOpen);
+            menuIcon.textContent = isOpen ? 'close' : 'menu';
+        });
+    });
+    </script>
+
+</body>
+</html>
